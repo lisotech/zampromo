@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZAMLITE MEDIA</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <style>
+        :root {
+            --bg-color: #0f172a;          /* Slate Dark Grey/Blue (Default Blue Theme) */
+            --sidebar-bg: #090d16;        
+            --card-bg: #1e293b;          
+            --card-hover: #334155;        
+            --text-color: #f8fafc;        
+            --text-muted: #94a3b8;        
+            --accent-color: #3b82f6;      
+            --accent-hover: #60a5fa;      
+            --border-color: #334155;      
+        }
+
+        /* Theme Variations */
+        body.theme-white {
+            --bg-color: #f1f5f9;
+            --sidebar-bg: #e2e8f0;
+            --card-bg: #ffffff;
+            --card-hover: #f8fafc;
+            --text-color: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #cbd5e1;
+        }
+
+        body.theme-green {
+            --bg-color: #064e3b;
+            --sidebar-bg: #022c22;
+            --card-bg: #065f46;
+            --card-hover: #047857;
+            --text-color: #ecfdf5;
+            --text-muted: #a7f3d0;
+            --accent-color: #10b981;
+            --accent-hover: #34d399;
+            --border-color: #047857;
+        }
+
+        body.theme-black {
+            --bg-color: #000000;
+            --sidebar-bg: #0a0a0a;
+            --card-bg: #121212;
+            --card-hover: #1f1f1f;
+            --text-color: #ffffff;
+            --text-muted: #a1a1aa;
+            --accent-color: #3f3f46;
+            --accent-hover: #52525b;
+            --border-color: #27272a;
+        }
+
+        /* Specific override for black theme to make MEDIA span orange */
+        body.theme-black .logo-text-stack span,
+        body.theme-black .mobile-brand-logo .logo-text-stack span {
+            color: #f97316 !important; /* Orange color */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* App Layout Wrapper */
+        .app-layout {
+            display: flex;
+            width: 100%;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Desktop Sidebar Navigation */
+        aside.sidebar {
+            width: 240px;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 200;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        .sidebar-logo-container {
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            line-height: 1.1;
+        }
+
+        .logo img {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .logo-text-stack {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo-text-stack span {
+            color: var(--accent-color);
+            transition: color 0.3s ease;
+        }
+
+        /* Close Button for Mobile Drawer */
+        .sidebar-close-btn {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.3rem;
+            cursor: pointer;
+            display: none;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 8px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+        }
+
+        .sidebar-menu .menu-category-title {
+            padding: 10px 16px 4px 16px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+
+        .sidebar-menu li a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-menu li.active a,
+        .sidebar-menu li a:hover {
+            color: var(--text-color);
+            background-color: var(--card-bg);
+        }
+
+        .sidebar-menu li.active a {
+            color: var(--accent-color);
+        }
+
+        /* Mobile Sign-in Container inside Sidebar */
+        .sidebar-footer-action {
+            padding: 12px 16px;
+            border-top: 1px solid var(--border-color);
+            display: none;
+        }
+
+        .mobile-signin-btn {
+            display: block;
+            width: 100%;
+            background-color: var(--accent-color);
+            color: #fff;
+            border: none;
+            padding: 8px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+
+        .mobile-signin-btn:hover {
+            background-color: var(--accent-hover);
+        }
+
+        /* Main Content Wrapper */
+        .main-wrapper {
+            margin-left: 240px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            width: calc(100% - 240px);
+        }
+
+        /* Top Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 16px;
+            border-bottom: 1px solid var(--border-color);
+            background-color: var(--bg-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            gap: 12px;
+            transition: background-color 0.3s ease;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            max-width: 500px;
+        }
+
+        /* Mobile inline brand logo (hidden on desktop) */
+        .mobile-brand-logo {
+            display: none;
+            font-weight: 800;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+            color: var(--text-color);
+            white-space: nowrap;
+            text-decoration: none;
+            align-items: center;
+            gap: 8px;
+            line-height: 1.1;
+        }
+
+        .mobile-brand-logo img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .mobile-brand-logo .logo-text-stack span {
+            color: var(--accent-color);
+            transition: color 0.3s ease;
+        }
+
+        .header-search-container {
+            flex: 1;
+            position: relative;
+        }
+
+        .search-bar {
+            background: var(--card-bg);
+            padding: 6px 12px 6px 34px;
+            border-radius: 20px;
+            color: var(--text-color);
+            font-size: 0.85rem;
+            border: 1px solid var(--border-color);
+            outline: none;
+            width: 100%;
+            transition: border-color 0.2s, background-color 0.3s ease;
+        }
+
+        .search-bar::placeholder {
+            color: var(--text-muted);
+        }
+
+        .search-bar:focus {
+            border-color: var(--accent-color);
+        }
+
+        .header-search-container::before {
+            content: "🔍";
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.75rem;
+            opacity: 0.6;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sign-in-btn {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 0.85rem;
+            cursor: pointer;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .sign-in-btn:hover {
+            color: var(--accent-color);
+        }
+
+        /* Hamburger Menu Toggle Button on Top Right */
+        .menu-toggle {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+        }
+
+        .menu-toggle:hover {
+            background-color: var(--card-bg);
+        }
+
+        /* Content Area */
+        .content-area {
+            padding: 24px;
+            flex: 1;
+        }
+
+        /* Hero Banner */
+        .hero-banner {
+            margin-bottom: 28px;
+            padding: 30px;
+            background: linear-gradient(135deg, var(--card-bg), var(--bg-color));
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+        }
+
+        .hero-text h1 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .hero-text h1 span {
+            color: var(--accent-color);
+        }
+
+        .hero-banner p {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: var(--text-muted);
+            max-width: 600px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--text-color);
+            letter-spacing: 0.5px;
+        }
+
+        .view-all-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .view-all-link:hover {
+            color: var(--text-color);
+        }
+
+        /* Grid Layout: Responsive columns */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 16px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            background-color: var(--card-hover);
+        }
+
+        .artwork-container {
+            width: 100%;
+            aspect-ratio: 1;
+            background-color: var(--bg-color);
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .artwork-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .card-info {
+            margin-bottom: 8px;
+        }
+
+        .artist-name {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .track-title {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: var(--text-color);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .action-btn {
+            flex: 1;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            font-size: 0.7rem;
+            padding: 6px 0;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            text-align: center;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s ease;
+        }
+
+        .action-btn.play {
+            background-color: var(--accent-color);
+            color: #fff;
+            border-color: var(--accent-color);
+        }
+
+        .action-btn.play:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .action-btn:not(.play):hover {
+            background-color: var(--card-hover);
+        }
+
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            padding: 40px 0;
+            display: none;
+        }
+
+        /* Footer - Reduced height */
+        footer {
+            padding: 10px 16px;
+            text-align: center;
+            border-top: 1px solid var(--border-color);
+            background-color: var(--bg-color);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        @media (min-width: 768px) {
+            footer {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+        }
+
+        .designer-credit {
+            font-style: italic;
+            color: var(--text-muted);
+        }
+
+        /* Floating Theme Switcher Widget - Positioned center-right, moved slightly up (top: 38%) */
+        .theme-switcher-float {
+            position: fixed;
+            top: 38%;
+            right: 20px;
+            transform: translateY(-50%);
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+        }
+
+        .theme-toggle-main-btn {
+            background-color: var(--accent-color);
+            color: #fff;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.95rem;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .theme-toggle-main-btn:hover {
+            transform: scale(1.05);
+            background-color: var(--accent-hover);
+        }
+
+        /* Promo Popup Modal Styles */
+        .promo-popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.75);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .promo-popup-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            max-width: 520px;
+            width: 100%;
+            padding: 24px;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .promo-popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+
+        .promo-popup-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--accent-color);
+        }
+
+        .promo-close-btn {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.4rem;
+            cursor: pointer;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .promo-close-btn:hover {
+            color: var(--accent-color);
+        }
+
+        .promo-body {
+            font-size: 0.85rem;
+            color: var(--text-color);
+            line-height: 1.5;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .promo-body p em {
+            color: var(--text-muted);
+        }
+
+        .promo-section-title {
+            font-weight: 700;
+            color: var(--text-color);
+            margin-top: 4px;
+        }
+
+        .promo-list {
+            list-style-type: disc;
+            padding-left: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            color: var(--text-muted);
+        }
+
+        .promo-list li span {
+            color: var(--text-color);
+        }
+
+        .promo-timer-text {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-align: right;
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Overlay for drawer */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.6);
+            z-index: 150;
+            display: none;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        /* Responsive Layout Adjustments */
+        @media (max-width: 1024px) {
+            aside.sidebar {
+                transform: translateX(-100%);
+                width: 260px;
+                box-shadow: 5px 0 15px rgba(0,0,0,0.5);
+            }
+
+            aside.sidebar.open {
+                transform: translateX(0);
+            }
+
+            .sidebar-close-btn {
+                display: block;
+            }
+
+            .sidebar-footer-action {
+                display: block;
+            }
+
+            .sign-in-btn {
+                display: none; /* Hidden from top header on mobile */
+            }
+
+            .mobile-brand-logo {
+                display: inline-flex; /* Show small brand logo on mobile top left */
+            }
+
+            .main-wrapper {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .cards-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Lisotech Promo Popup Modal -->
+    <div class="promo-popup-overlay" id="promoPopup">
+        <div class="promo-popup-card">
+            <div class="promo-popup-header">
+                <div class="promo-popup-title">Lisotech Promo</div>
+                <button class="promo-popup-close promo-close-btn" id="promoCloseBtn">&times;</button>
+            </div>
+            <div class="promo-body">
+                <p><em>Get yourself the following services on promotion:</em></p>
+                
+                <div class="promo-section-title">1. Website Development</div>
+                <ul class="promo-list">
+                    <li><span>Individual web @K1500</span> - comes with .com and free one-year hosting and domain.</li>
+                    <li><span>Company web @K3500</span> - comes with .com and free one-year hosting and domain.</li>
+                </ul>
+
+                <div class="promo-section-title">2. Company Registration and Compliance</div>
+                <p style="font-size: 0.8rem; font-weight: bold; margin-top: 2px;">A. PACRA Services</p>
+                <ul class="promo-list">
+                    <li><span>Business @K850 only</span> - comes with PACRA Business Certificate.</li>
+                    <li><span>Limited Company @K2750 only</span> - comes with PACRA incorporation certificate &amp; ZRA T-PIN Certificate after the registration process.</li>
+                    <li><span>PACRA Annual Returns @K500 only</span></li>
+                </ul>
+
+                <p style="font-size: 0.8rem; font-weight: bold; margin-top: 4px;">B. ZRA Services</p>
+                <ul class="promo-list">
+                    <li><span>T-PIN Registration</span></li>
+                    <li><span>ZRA Tax type Registration</span></li>
+                    <li><span>Monthly Returns (TOT &amp; PAYE)</span></li>
+                    <li><span>Smart Invoice Services</span></li>
+                </ul>
+
+                <div class="promo-section-title">3. ZPPA Registration and Certificate Renewal, etc.</div>
+
+                <div class="promo-timer-text" id="promoTimerText">This promo message will automatically close in 3:00</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-layout">
+        <!-- Sidebar Navigation Drawer -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-logo-container">
+                <a href="#" class="logo">
+                    <img src="logo.png" alt="Logo">
+                    <div class="logo-text-stack">
+                        ZAMLITE
+                        <span>MEDIA</span>
+                    </div>
+                </a>
+                <button class="sidebar-close-btn" id="sidebarCloseBtn">&times;</button>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="menu-category-title">Browse</li>
+                <li class="active"><a href="#">📂 <span>Discover</span></a></li>
+                <li><a href="#">📈 <span>Charts</span></a></li>
+                <li><a href="#">🎵 <span>Playlists</span></a></li>
+                <li><a href="#">📻 <span>Feed</span></a></li>
+                <li><a href="#">📚 <span>My Library</span></a></li>
+            </ul>
+            <!-- Sign-in option repositioned inside the mobile menu drawer -->
+            <div class="sidebar-footer-action">
+                <button class="mobile-signin-btn">Sign-in</button>
+            </div>
+        </aside>
+
+        <!-- Main Wrapper -->
+        <div class="main-wrapper">
+            <!-- Header -->
+            <header>
+                <div class="header-left">
+                    <a href="#" class="mobile-brand-logo">
+                        <img src="logo.png" alt="Logo">
+                        <div class="logo-text-stack">
+                            ZAMLITE
+                            <span>MEDIA</span>
+                        </div>
+                    </a>
+                    <div class="header-search-container">
+                        <input type="text" id="searchInput" class="search-bar" placeholder="Search artists or track...">
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="sign-in-btn">Sign-in</button>
+                    <!-- Hamburger Menu Toggle Button on Top Right -->
+                    <button class="menu-toggle" id="menuToggle" aria-label="Toggle Menu">&#9776;</button>
+                </div>
+            </header>
+
+            <!-- Main Content Area -->
+            <div class="content-area">
+                <!-- Hero Banner -->
+                <section class="hero-banner">
+                    <div class="hero-text">
+                        <h1>The music platform empowering <span>artists</span></h1>
+                        <p>The music platform that helps the artists to connect with their fans. Zamlite Music, we are here for you.</p>
+                    </div>
+                </section>
+
+                <!-- Featured Artist Section -->
+                <section>
+                    <div class="section-header">
+                        <div class="section-title">Trending Songs</div>
+                        <a href="#" class="view-all-link">VIEW ALL</a>
+                    </div>
+                    
+                    <!-- Grid of Cards -->
+                    <div class="cards-grid" id="cardsGrid">
+                        <!-- Card 1 -->
+                        <div class="card" data-artist="Egyptian" data-track="Drums of Pharaoh">
+                            <div class="artwork-container">
+                                <img src="gart.png" alt="Egyptian - Drums of Pharaoh Artwork">
+                            </div>
+                            <div class="card-info">
+                                <div class="artist-name">Egyptian</div>
+                                <div class="track-title">Drums of Pharaoh</div>
+                            </div>
+                            <audio src="Egyptian-Pharaoh-Drums of Pharaoh.mp3" preload="none"></audio>
+                            <div class="card-actions">
+                                <button class="action-btn play">Play</button>
+                                <a href="Egyptian-Pharaoh-Drums of Pharaoh.mp3" download="Egyptian-Pharaoh-Drums of Pharaoh.mp3" class="action-btn download">Down</a>
+                            </div>
+                        </div>
+
+                        <!-- Card 2 -->
+                        <div class="card" data-artist="Driemo Ft Y-Maps" data-track="Ninvela So">
+                            <div class="artwork-container">
+                                <img src="gart.png" alt="Driemo Ft Y-Maps - Ninvela So Artwork">
+                            </div>
+                            <div class="card-info">
+                                <div class="artist-name">Driemo Ft Y-Maps</div>
+                                <div class="track-title">Ninvela So</div>
+                            </div>
+                            <audio src="Driemo-ft-Yo-Maps-Ninvela-So.mp3" preload="none"></audio>
+                            <div class="card-actions">
+                                <button class="action-btn play">Play</button>
+                                <a href="Driemo-ft-Yo-Maps-Ninvela-So.mp3" download="Driemo-ft-Yo-Maps-Ninvela-So.mp3" class="action-btn download">Down</a>
+                            </div>
+                        </div>
+
+                        <!-- Card 3 -->
+                        <div class="card" data-artist="Driemo Ft Kae Chaps" data-track="Poko">
+                            <div class="artwork-container">
+                                <img src="gart.png" alt="Driemo Ft Kae Chaps - Poko Artwork">
+                            </div>
+                            <div class="card-info">
+                                <div class="artist-name">Driemo Ft Kae Chaps</div>
+                                <div class="track-title">Poko</div>
+                            </div>
+                            <audio src="Driemo-ft-Kae-Chaps-Poko.mp3" preload="none"></audio>
+                            <div class="card-actions">
+                                <button class="action-btn play">Play</button>
+                                <a href="Driemo-ft-Kae-Chaps-Poko.mp3" download="Driemo-ft-Kae-Chaps-Poko.mp3" class="action-btn download">Down</a>
+                            </div>
+                        </div>
+
+                        <!-- Card 4 -->
+                        <div class="card" data-artist="Dove Dee" data-track="Blame Me">
+                            <div class="artwork-container">
+                                <img src="gart.png" alt="Dove Dee - Blame Me Artwork">
+                            </div>
+                            <div class="card-info">
+                                <div class="artist-name">Dove Dee</div>
+                                <div class="track-title">Blame Me</div>
+                            </div>
+                            <audio src="Dove-Dee-ft-Goddy-Zambia-Blame-Me.mp3" preload="none"></audio>
+                            <div class="card-actions">
+                                <button class="action-btn play">Play</button>
+                                <a href="Dove-Dee-ft-Goddy-Zambia-Blame-Me.mp3" download="Dove-Dee-ft-Goddy-Zambia-Blame-Me.mp3" class="action-btn download">Down</a>
+                            </div>
+                        </div>
+
+                        <!-- Card 5 -->
+                        <div class="card" data-artist="Kayz Adams" data-track="Revolution">
+                            <div class="artwork-container">
+                                <img src="gart.png" alt="Kayz Adams - Revolution Artwork">
+                            </div>
+                            <div class="card-info">
+                                <div class="artist-name">Kayz Adams</div>
+                                <div class="track-title">Revolution</div>
+                            </div>
+                            <audio src="Kayz-Adams-Revolution.mp3" preload="none"></audio>
+                            <div class="card-actions">
+                                <button class="action-btn play">Play</button>
+                                <a href="Kayz-Adams-Revolution.mp3" download="Kayz-Adams-Revolution.mp3" class="action-btn download">Down</a>
+                            </div>
+                        </div>
+
+                        <!-- Card 6 -->
+                        <div class="card" data-artist="Rockstone Ft Yo-Maps" data-track="Bushe">
+                            <div class="artwork-container">
+                                <img src="gart.png" alt="Rockstone Ft Yo-Maps - Bushe Artwork">
+                            </div>
+                            <div class="card-info">
+                                <div class="artist-name">Rockstone Ft Yo-Maps</div>
+                                <div class="track-title">Bushe</div>
+                            </div>
+                            <audio src="Rockstone-Ft-Yo-Maps-Bushe.mp3" preload="none"></audio>
+                            <div class="card-actions">
+                                <button class="action-btn play">Play</button>
+                                <a href="Rockstone-Ft-Yo-Maps-Bushe.mp3" download="Rockstone-Ft-Yo-Maps-Bushe.mp3" class="action-btn download">Down</a>
+                            </div>
+                        </div>
+
+                        <!-- Card 7 -->
+                        <div class="card" data-artist="Jay-Rox Ft Slapdee" data-track="Finally">
+                            <div class="artwork-container">
+                                <img src="gart.png" alt="Jay-Rox Ft Slapdee - Finally Artwork">
+                            </div>
+                            <div class="card-info">
+                                <div class="artist-name">Jay-Rox Ft Slapdee</div>
+                                <div class="track-title">Finally</div>
+                            </div>
+                            <audio src="Jay-Rox-ft-Slapdee-Finally.mp3" preload="none"></audio>
+                            <div class="card-actions">
+                                <button class="action-btn play">Play</button>
+                                <a href="Jay-Rox-ft-Slapdee-Finally.mp3" download="Jay-Rox-ft-Slapdee-Finally.mp3" class="action-btn download">Down</a>
+                            </div>
+                        </div>
+
+                        <!-- Card 8 -->
+                        <div class="card" data-artist="Alpha-Romeo Ft Chewe" data-track="Update 2">
+                            <div class="artwork-container">
+                                <img src="gart.png" alt="Alpha-Romeo Ft Chewe - Update 2 Artwork">
+                            </div>
+                            <div class="card-info">
+                                <div class="artist-name">Alpha-Romeo Ft Chewe</div>
+                                <div class="track-title">Update 2</div>
+                            </div>
+                            <audio src="Alpha-Romeo-ft-Chewe-Update-2.mp3" preload="none"></audio>
+                            <div class="card-actions">
+                                <button class="action-btn play">Play</button>
+                                <a href="Alpha-Romeo-ft-Chewe-Update-2.mp3" download="Alpha-Romeo-ft-Chewe-Update-2.mp3" class="action-btn download">Down</a>
+                            </div>
+                        </div>
+
+                        <!-- Card 9 -->
+                        <div class="card" data-artist="Macky-2" data-track="Soilange">
+                            <div class="artwork-container">
+                                <img src="gart.png" alt="Macky-2 - Soilange Artwork">
+                            </div>
+                            <div class="card-info">
+                                <div class="artist-name">Macky-2</div>
+                                <div class="track-title">Soilange</div>
+                            </div>
+                            <audio src="Macky-2-Soilange.mp3" preload="none"></audio>
+                            <div class="card-actions">
+                                <button class="action-btn play">Play</button>
+                                <a href="Macky-2-Soilange.mp3" download="Macky-2-Soilange.mp3" class="action-btn download">Down</a>
+                            </div>
+                        </div>
+
+                        <!-- Card 10 (Updated Artist & Track Details) -->
+                        <div class="card" data-artist="T-Sean Ft Chef 187" data-track="Injato">
+                            <div class="artwork-container">
+                                <img src="gart.png" alt="T-Sean Ft Chef 187 - Injato Artwork">
+                            </div>
+                            <div class="card-info">
+                                <div class="artist-name">T-Sean Ft Chef 187</div>
+                                <div class="track-title">Injato</div>
+                            </div>
+                            <audio src="T-Sean-Ft-Chef-187-Injato.mp3" preload="none"></audio>
+                            <div class="card-actions">
+                                <button class="action-btn play">Play</button>
+                                <a href="T-Sean-Ft-Chef-187-Injato.mp3" download="T-Sean-Ft-Chef-187-Injato.mp3" class="action-btn download">Down</a>
+                            </div>
+                        </div>
+
+                        <!-- No Results Message -->
+                        <div class="no-results" id="noResults">No tracks or artists found matching your search.</div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Footer -->
+            <footer>
+                <p>&copy; ZAMLITE MEDIA || All Rights Reserved</p>
+                <marquee><p class="designer-credit">Designed @ LISOTECH Call or WhatsApp +260974101130</p></marquee>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Floating Theme Switcher Widget (Small size, center-right, moved slightly up, Sun icon) -->
+    <div class="theme-switcher-float" id="themeSwitcherFloat">
+        <button class="theme-toggle-main-btn" id="themeToggleMainBtn" title="Change Theme">☀️</button>
+    </div>
+
+    <!-- Script to handle sidebar toggle, audio playback, search functionality, automatic theme cycle, and promo popup countdown -->
+    <script>
+        // Sidebar Drawer Toggle
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('open');
+            sidebarOverlay.classList.toggle('active');
+        }
+
+        menuToggle.addEventListener('click', toggleSidebar);
+        sidebarCloseBtn.addEventListener('click', toggleSidebar);
+        sidebarOverlay.addEventListener('click', toggleSidebar);
+
+        // Promo Popup Timer & Controls (3 minutes = 180 seconds)
+        const promoPopup = document.getElementById('promoPopup');
+        const promoCloseBtn = document.getElementById('promoCloseBtn');
+        const promoTimerText = document.getElementById('promoTimerText');
+        
+        let timeLeft = 180; // 3 minutes in seconds
+
+        const promoTimerInterval = setInterval(() => {
+            timeLeft--;
+            let minutes = Math.floor(timeLeft / 60);
+            let seconds = timeLeft % 60;
+            promoTimerText.textContent = `This promo message will automatically close in ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
+            if (timeLeft <= 0) {
+                clearInterval(promoTimerInterval);
+                promoPopup.style.display = 'none';
+            }
+        }, 1000);
+
+        promoCloseBtn.addEventListener('click', () => {
+            clearInterval(promoTimerInterval);
+            promoPopup.style.display = 'none';
+        });
+
+        promoPopup.addEventListener('click', (e) => {
+            if (e.target === promoPopup) {
+                clearInterval(promoTimerInterval);
+                promoPopup.style.display = 'none';
+            }
+        });
+
+        // Audio Playback Handler
+        document.querySelectorAll('.card').forEach(card => {
+            const playBtn = card.querySelector('.action-btn.play');
+            const audio = card.querySelector('audio');
+
+            if (playBtn && audio) {
+                playBtn.addEventListener('click', () => {
+                    document.querySelectorAll('audio').forEach(a => {
+                        if (a !== audio) {
+                            a.pause();
+                            a.currentTime = 0;
+                            const otherBtn = a.closest('.card').querySelector('.action-btn.play');
+                            if (otherBtn) otherBtn.textContent = 'Play';
+                        }
+                    });
+
+                    if (audio.paused) {
+                        audio.play().then(() => {
+                            playBtn.textContent = 'Pause';
+                        }).catch(e => {
+                            console.log("Audio playback error:", e);
+                            alert("Please ensure the audio file exists and is accessible.");
+                        });
+                    } else {
+                        audio.pause();
+                        playBtn.textContent = 'Play';
+                    }
+                });
+
+                audio.addEventListener('ended', () => {
+                    playBtn.textContent = 'Play';
+                });
+            }
+        });
+
+        // Search Engine Functionality
+        const searchInput = document.getElementById('searchInput');
+        const cards = document.querySelectorAll('.cards-grid .card');
+        const noResults = document.getElementById('noResults');
+
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            let matchCount = 0;
+
+            cards.forEach(card => {
+                const artist = card.getAttribute('data-artist').toLowerCase();
+                const track = card.getAttribute('data-track').toLowerCase();
+
+                if (artist.includes(query) || track.includes(query)) {
+                    card.style.display = 'flex';
+                    matchCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            if (matchCount === 0) {
+                noResults.style.display = 'block';
+            } else {
+                noResults.style.display = 'none';
+            }
+        });
+
+        // Automatic Theme Cycling via Floating Sun Button (Blue default, White, Green, Black)
+        const themeToggleMainBtn = document.getElementById('themeToggleMainBtn');
+        const themes = ['default', 'white', 'green', 'black'];
+
+        function applyTheme(theme) {
+            document.body.classList.remove('theme-white', 'theme-green', 'theme-black');
+            if (theme !== 'default') {
+                document.body.classList.add(`theme-${theme}`);
+            }
+            localStorage.setItem('zamlite_theme', theme);
+        }
+
+        themeToggleMainBtn.addEventListener('click', () => {
+            const currentTheme = localStorage.getItem('zamlite_theme') || 'default';
+            let currentIndex = themes.indexOf(currentTheme);
+            if (currentIndex === -1) currentIndex = 0;
+            
+            // Cycle to the next theme automatically
+            let nextIndex = (currentIndex + 1) % themes.length;
+            let nextTheme = themes[nextIndex];
+
+            applyTheme(nextTheme);
+        });
+
+        // Load saved theme preference on page load (Defaults to Blue 'default')
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('zamlite_theme');
+            if (savedTheme) {
+                applyTheme(savedTheme);
+            }
+        });
+    </script>
+</body>
+</html>
