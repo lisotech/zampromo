@@ -72,6 +72,8 @@
             min-height: 100vh;
             overflow-x: hidden;
             transition: background-color 0.3s ease, color 0.3s ease;
+            width: 100%;
+            max-width: 100vw;
         }
 
         .app-layout {
@@ -79,6 +81,7 @@
             width: 100%;
             min-height: 100vh;
             position: relative;
+            overflow-x: hidden;
         }
 
         aside.sidebar {
@@ -210,6 +213,7 @@
             flex-direction: column;
             min-height: 100vh;
             width: calc(100% - 240px);
+            overflow-x: hidden;
         }
 
         header {
@@ -224,6 +228,7 @@
             z-index: 100;
             gap: 12px;
             transition: background-color 0.3s ease;
+            width: 100%;
         }
 
         .header-left {
@@ -312,6 +317,9 @@
         .content-area {
             padding: 24px;
             flex: 1;
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
         }
 
         .hero-banner {
@@ -370,11 +378,12 @@
             background-color: var(--card-bg);
         }
 
-        /* Grid Layout Framework (Desktop 8x2 columns, Mobile 3x3 columns setup) */
+        /* Grid Layout Framework */
         .cards-grid {
             display: grid;
             grid-template-columns: repeat(8, 1fr);
             gap: 16px;
+            width: 100%;
         }
 
         .card {
@@ -387,6 +396,8 @@
             justify-content: space-between;
             transition: transform 0.2s ease, background-color 0.2s ease;
             cursor: pointer;
+            width: 100%;
+            min-width: 0;
         }
 
         .card:hover {
@@ -413,6 +424,7 @@
         .card-info {
             margin-bottom: 8px;
             text-align: center;
+            overflow: hidden;
         }
 
         .artist-name {
@@ -435,6 +447,7 @@
         .card-actions {
             display: flex;
             gap: 6px;
+            width: 100%;
         }
 
         .action-btn {
@@ -453,6 +466,7 @@
             align-items: center;
             justify-content: center;
             transition: background-color 0.2s ease;
+            white-space: nowrap;
         }
 
         .action-btn.play {
@@ -488,6 +502,7 @@
             display: flex;
             flex-direction: column;
             gap: 4px;
+            width: 100%;
         }
 
         @media (min-width: 768px) {
@@ -668,10 +683,18 @@
             .mobile-brand-logo { display: inline-flex; }
             .main-wrapper { margin-left: 0; width: 100%; }
 
-            /* Mobile Grid: 3 Columns Format */
+            /* Mobile Grid: Exactly 3 Columns with strict box sizing to prevent horizontal overflow */
             .cards-grid {
                 grid-template-columns: repeat(3, 1fr);
-                gap: 10px;
+                gap: 8px;
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .content-area {
+                padding: 12px;
+                width: 100%;
+                max-width: 100%;
             }
         }
     </style>
@@ -734,7 +757,7 @@
             </div>
             <ul class="sidebar-menu">
                 <li class="menu-category-title">Browse</li>
-                <li class="active"><a href="#">📂 <span>Discover</span></a></li>
+                <li class="active"><a href="#" id="homeNav">📂 <span>Discover</span></a></li>
                 <li><a href="#">📈 <span>Charts</span></a></li>
                 <li><a href="#">🎵 <span>Playlists</span></a></li>
                 <li><a href="#">📻 <span>Feed</span></a></li>
@@ -750,7 +773,7 @@
             <!-- Header -->
             <header>
                 <div class="header-left">
-                    <a href="#" class="mobile-brand-logo">
+                    <a href="#" class="mobile-brand-logo" id="mobileHomeLogo">
                         <img src="logo.png" alt="Logo">
                         <div class="logo-text-stack">
                             ZAMLITE
@@ -770,7 +793,7 @@
             <!-- Main Content Area -->
             <div class="content-area">
                 <!-- Hero Banner -->
-                <section class="hero-banner">
+                <section class="hero-banner" id="heroBanner">
                     <div class="hero-text">
                         <h1>The music platform empowering <span>artists</span></h1>
                         <p>The music platform that helps artists connect with their fans. Zamlite Music, we are here for you.</p>
@@ -840,6 +863,10 @@
         const sectionTitle = document.getElementById('sectionTitle');
         const backBtn = document.getElementById('backBtn');
         const noResults = document.getElementById('noResults');
+        const heroBanner = document.getElementById('heroBanner');
+        const viewAllLink = document.getElementById('viewAllLink');
+        const homeNav = document.getElementById('homeNav');
+        const mobileHomeLogo = document.getElementById('mobileHomeLogo');
 
         let currentView = 'artists'; // 'artists' or 'songs'
         let selectedArtistName = null;
@@ -850,6 +877,8 @@
             selectedArtistName = null;
             sectionTitle.textContent = "Trending Artists";
             backBtn.style.display = 'none';
+            heroBanner.style.display = 'block';
+            viewAllLink.style.display = 'inline';
             cardsGrid.innerHTML = '';
 
             // Extract unique artist names
@@ -873,20 +902,23 @@
                 `;
 
                 card.addEventListener('click', () => {
-                    renderSongsView(artist);
+                    openArtistPage(artist);
                 });
 
                 cardsGrid.appendChild(card);
             });
             noResults.style.display = 'none';
+            window.scrollTo(0, 0);
         }
 
-        // Render Songs View After Selecting an Artist (Exactly 3 songs)
-        function renderSongsView(artistName) {
+        // Open Artist Page view (simulating a clean mobile page load fitting the screen perfectly)
+        function openArtistPage(artistName) {
             currentView = 'songs';
             selectedArtistName = artistName;
-            sectionTitle.textContent = `Songs by ${artistName}`;
+            sectionTitle.textContent = `${artistName} - Top Songs`;
             backBtn.style.display = 'inline-block';
+            heroBanner.style.display = 'none';
+            viewAllLink.style.display = 'none';
             cardsGrid.innerHTML = '';
 
             // Limit to exactly 3 songs
@@ -915,9 +947,20 @@
 
             attachAudioEvents();
             noResults.style.display = 'none';
+            window.scrollTo(0, 0);
         }
 
         backBtn.addEventListener('click', () => {
+            renderArtistsView();
+        });
+
+        homeNav.addEventListener('click', (e) => {
+            e.preventDefault();
+            renderArtistsView();
+        });
+
+        mobileHomeLogo.addEventListener('click', (e) => {
+            e.preventDefault();
             renderArtistsView();
         });
 
@@ -968,7 +1011,7 @@
             
             if (query === '') {
                 if (currentView === 'artists') renderArtistsView();
-                else renderSongsView(selectedArtistName);
+                else openArtistPage(selectedArtistName);
                 return;
             }
 
