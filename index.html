@@ -635,6 +635,7 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
+            position: relative;
         }
 
         .promo-timer-text {
@@ -666,6 +667,41 @@
 
         .promo-list li span {
             color: var(--text-color);
+        }
+
+        /* Center-Right Floating Action Icons inside Popup */
+        .promo-floating-icons {
+            position: absolute;
+            top: 50%;
+            right: 12px;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .promo-icon-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background-color: var(--accent-color);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 1.1rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .promo-icon-btn.whatsapp {
+            background-color: #25d366;
+        }
+
+        .promo-icon-btn:hover {
+            transform: scale(1.1);
         }
 
         @keyframes fadeIn {
@@ -739,10 +775,16 @@
                 <button class="promo-popup-close promo-close-btn" id="promoCloseBtn">&times;</button>
             </div>
             <div class="promo-body">
+                <!-- Center Right Floating Icons -->
+                <div class="promo-floating-icons">
+                    <a href="tel:+260974101130" class="promo-icon-btn" title="Call Us">📞</a>
+                    <a href="https://wa.me/260974101130" target="_blank" rel="noopener noreferrer" class="promo-icon-btn whatsapp" title="WhatsApp Us">💬</a>
+                </div>
+
                 <div class="promo-timer-text" id="promoTimerText">This promo message will automatically close in 3:00</div>
                 <p><em>for quick response Call or WhatsApp us +260974101130</em></p>
                 <p style="font-weight: bold; color: var(--accent-color);">SAMSON LISOMONA <em>CEO &amp; Founder @Lisotech Innovations</em></p>
-                <p><em>get yourself the following services on promotion</em></p>
+                <p><em>Get yourself the following services on promotion</em></p>
                 
                 <div class="promo-section-title">1. Website Development</div>
                 <ul class="promo-list">
@@ -751,7 +793,7 @@
                 </ul>
 
                 <div class="promo-section-title">2. Company registration and Compliance</div>
-                <p style="font-size: 0.8rem; font-weight: bold; margin-top: 2px;">A. PACRA Services</p>
+                <p style="font-size: 0.8rem; font-weight: bold; margin-top: 2px;">A.PACRA Services</p>
                 <ul class="promo-list">
                     <li><span>i. Business @K850 only</span> - it comes with PACRA Business Certificate</li>
                     <li><span>ii. Limited Company @K2750 only</span> - it comes with PACRA incorporation certificate &amp; ZRA T-PIN Certificate after the registration process</li>
