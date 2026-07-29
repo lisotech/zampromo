@@ -597,6 +597,7 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
             max-height: 90vh;
             overflow-y: auto;
+            cursor: pointer; /* Clickable to disappear instantly */
         }
 
         .promo-popup-header {
@@ -642,7 +643,7 @@
             color: var(--accent-color);
             font-weight: bold;
             font-style: normal;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
 
         .promo-body p em {
@@ -731,15 +732,17 @@
 </head>
 <body>
 
-    <!-- Lisotech Promo Popup Modal (Appears after 7 seconds) -->
-    <div class="promo-popup-overlay" id="promoPopup">
-        <div class="promo-popup-card">
+    <!-- Lisotech Promo Popup Modal (Appears after 7 seconds, disappears if pressed anywhere on the card, or closed via X button) -->
+    <div class="promo-popup-overlay" id="promoPopupOverlay">
+        <div class="promo-popup-card" id="promoPopupCard">
             <div class="promo-popup-header">
                 <div class="promo-popup-title">Lisotech Promo</div>
                 <button class="promo-popup-close promo-close-btn" id="promoCloseBtn">&times;</button>
             </div>
             <div class="promo-body">
                 <div class="promo-timer-text" id="promoTimerText">This promo message will automatically close in 3:00</div>
+                <p><em>for quick response Call or WhatsApp us +260974101130</em></p>
+                <p><strong>SAMSON LISOMONA</strong> <em>CEO &amp; Founder @Lisotech Innovations</em></p>
                 <p><em>get yourself the following services on promotion</em></p>
                 
                 <div class="promo-section-title">1. Website Development</div>
@@ -1036,7 +1039,8 @@
         sidebarOverlay.addEventListener('click', toggleSidebar);
 
         // Promo Popup 7-Second Delay & 3-Minute Countdown
-        const promoPopup = document.getElementById('promoPopup');
+        const promoPopupOverlay = document.getElementById('promoPopupOverlay');
+        const promoPopupCard = document.getElementById('promoPopupCard');
         const promoCloseBtn = document.getElementById('promoCloseBtn');
         const promoTimerText = document.getElementById('promoTimerText');
         
@@ -1045,7 +1049,7 @@
 
         // Trigger popup after 7 seconds upon opening the website
         setTimeout(() => {
-            promoPopup.style.display = 'flex';
+            promoPopupOverlay.style.display = 'flex';
             
             promoTimerInterval = setInterval(() => {
                 timeLeft--;
@@ -1055,22 +1059,21 @@
 
                 if (timeLeft <= 0) {
                     clearInterval(promoTimerInterval);
-                    promoPopup.style.display = 'none';
+                    promoPopupOverlay.style.display = 'none';
                 }
             }, 1000);
         }, 7000);
 
         function closePromo() {
             if (promoTimerInterval) clearInterval(promoTimerInterval);
-            promoPopup.style.display = 'none';
+            promoPopupOverlay.style.display = 'none';
         }
 
         promoCloseBtn.addEventListener('click', closePromo);
 
-        promoPopup.addEventListener('click', (e) => {
-            if (e.target === promoPopup) {
-                closePromo();
-            }
+        // Disappear if pressed anywhere on the popup card or backdrop overlay
+        promoPopupOverlay.addEventListener('click', (e) => {
+            closePromo();
         });
 
         // Audio Playback Handler
