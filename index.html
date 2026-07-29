@@ -570,7 +570,7 @@
             background-color: var(--accent-hover);
         }
 
-        /* Promo Popup Modal Styles */
+        /* Promo Popup Modal Styles (Hidden by default until 7s timeout) */
         .promo-popup-overlay {
             position: fixed;
             top: 0;
@@ -579,7 +579,7 @@
             height: 100%;
             background-color: rgba(0, 0, 0, 0.75);
             z-index: 2000;
-            display: flex;
+            display: none;
             align-items: center;
             justify-content: center;
             padding: 16px;
@@ -637,6 +637,14 @@
             gap: 10px;
         }
 
+        .promo-timer-text {
+            font-size: 0.8rem;
+            color: var(--accent-color);
+            font-weight: bold;
+            font-style: normal;
+            margin-bottom: 4px;
+        }
+
         .promo-body p em {
             color: var(--text-muted);
         }
@@ -658,14 +666,6 @@
 
         .promo-list li span {
             color: var(--text-color);
-        }
-
-        .promo-timer-text {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            text-align: right;
-            margin-top: 8px;
-            font-style: italic;
         }
 
         @keyframes fadeIn {
@@ -731,7 +731,7 @@
 </head>
 <body>
 
-    <!-- Lisotech Promo Popup Modal -->
+    <!-- Lisotech Promo Popup Modal (Appears after 7 seconds) -->
     <div class="promo-popup-overlay" id="promoPopup">
         <div class="promo-popup-card">
             <div class="promo-popup-header">
@@ -739,33 +739,32 @@
                 <button class="promo-popup-close promo-close-btn" id="promoCloseBtn">&times;</button>
             </div>
             <div class="promo-body">
-                <p><em>Get yourself the following services on promotion:</em></p>
+                <div class="promo-timer-text" id="promoTimerText">This promo message will automatically close in 3:00</div>
+                <p><em>get yourself the following services on promotion</em></p>
                 
                 <div class="promo-section-title">1. Website Development</div>
                 <ul class="promo-list">
-                    <li><span>Individual web @K1500</span> - comes with .com and free one-year hosting and domain.</li>
-                    <li><span>Company web @K3500</span> - comes with .com and free one-year hosting and domain.</li>
+                    <li><span>i. individual web @K1500</span> - comes .com and free one year hosting and domain</li>
+                    <li><span>ii. Company web @K3500</span> - comes .com and free one year hosting and domain</li>
                 </ul>
 
-                <div class="promo-section-title">2. Company Registration and Compliance</div>
+                <div class="promo-section-title">2. Company registration and Compliance</div>
                 <p style="font-size: 0.8rem; font-weight: bold; margin-top: 2px;">A. PACRA Services</p>
                 <ul class="promo-list">
-                    <li><span>Business @K850 only</span> - comes with PACRA Business Certificate.</li>
-                    <li><span>Limited Company @K2750 only</span> - comes with PACRA incorporation certificate &amp; ZRA T-PIN Certificate after the registration process.</li>
-                    <li><span>PACRA Annual Returns @K500 only</span></li>
+                    <li><span>i. Business @K850 only</span> - it comes with PACRA Business Certificate</li>
+                    <li><span>ii. Limited Company @K2750 only</span> - it comes with PACRA incorporation certificate &amp; ZRA T-PIN Certificate after the registration process</li>
+                    <li><span>iii. PACRA Annual Returns @K500 only</span></li>
                 </ul>
 
-                <p style="font-size: 0.8rem; font-weight: bold; margin-top: 4px;">B. ZRA Services</p>
+                <p style="font-size: 0.8rem; font-weight: bold; margin-top: 4px;">2. ZRA Service</p>
                 <ul class="promo-list">
-                    <li><span>T-PIN Registration</span></li>
-                    <li><span>ZRA Tax type Registration</span></li>
-                    <li><span>Monthly Returns (TOT &amp; PAYE)</span></li>
-                    <li><span>Smart Invoice Services</span></li>
+                    <li><span>i. T-PIN Registration</span></li>
+                    <li><span>ii. ZRA Tax type Registration</span></li>
+                    <li><span>iii. Monthly Returns (TOT &amp; PAYE)</span></li>
+                    <li><span>iv. Smart Invoice Services</span></li>
                 </ul>
 
-                <div class="promo-section-title">3. ZPPA Registration and Certificate Renewal, etc.</div>
-
-                <div class="promo-timer-text" id="promoTimerText">This promo message will automatically close in 3:00</div>
+                <div class="promo-section-title">3. ZPPA Registration and Certificate Renewal and etc.</div>
             </div>
         </div>
     </div>
@@ -984,7 +983,7 @@
                             </div>
                         </div>
 
-                        <!-- Card 10 (Updated Artist & Track Details) -->
+                        <!-- Card 10 -->
                         <div class="card" data-artist="T-Sean Ft Chef 187" data-track="Injato">
                             <div class="artwork-container">
                                 <img src="gart.png" alt="T-Sean Ft Chef 187 - Injato Artwork">
@@ -1014,12 +1013,12 @@
         </div>
     </div>
 
-    <!-- Floating Theme Switcher Widget (Small size, center-right, moved slightly up, Sun icon) -->
+    <!-- Floating Theme Switcher Widget -->
     <div class="theme-switcher-float" id="themeSwitcherFloat">
         <button class="theme-toggle-main-btn" id="themeToggleMainBtn" title="Change Theme">☀️</button>
     </div>
 
-    <!-- Script to handle sidebar toggle, audio playback, search functionality, automatic theme cycle, and promo popup countdown -->
+    <!-- Script to handle sidebar toggle, audio playback, search functionality, theme cycle, and 7s delayed promo popup -->
     <script>
         // Sidebar Drawer Toggle
         const menuToggle = document.getElementById('menuToggle');
@@ -1036,34 +1035,41 @@
         sidebarCloseBtn.addEventListener('click', toggleSidebar);
         sidebarOverlay.addEventListener('click', toggleSidebar);
 
-        // Promo Popup Timer & Controls (3 minutes = 180 seconds)
+        // Promo Popup 7-Second Delay & 3-Minute Countdown
         const promoPopup = document.getElementById('promoPopup');
         const promoCloseBtn = document.getElementById('promoCloseBtn');
         const promoTimerText = document.getElementById('promoTimerText');
         
+        let promoTimerInterval;
         let timeLeft = 180; // 3 minutes in seconds
 
-        const promoTimerInterval = setInterval(() => {
-            timeLeft--;
-            let minutes = Math.floor(timeLeft / 60);
-            let seconds = timeLeft % 60;
-            promoTimerText.textContent = `This promo message will automatically close in ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        // Trigger popup after 7 seconds upon opening the website
+        setTimeout(() => {
+            promoPopup.style.display = 'flex';
+            
+            promoTimerInterval = setInterval(() => {
+                timeLeft--;
+                let minutes = Math.floor(timeLeft / 60);
+                let seconds = timeLeft % 60;
+                promoTimerText.textContent = `This promo message will automatically close in ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 
-            if (timeLeft <= 0) {
-                clearInterval(promoTimerInterval);
-                promoPopup.style.display = 'none';
-            }
-        }, 1000);
+                if (timeLeft <= 0) {
+                    clearInterval(promoTimerInterval);
+                    promoPopup.style.display = 'none';
+                }
+            }, 1000);
+        }, 7000);
 
-        promoCloseBtn.addEventListener('click', () => {
-            clearInterval(promoTimerInterval);
+        function closePromo() {
+            if (promoTimerInterval) clearInterval(promoTimerInterval);
             promoPopup.style.display = 'none';
-        });
+        }
+
+        promoCloseBtn.addEventListener('click', closePromo);
 
         promoPopup.addEventListener('click', (e) => {
             if (e.target === promoPopup) {
-                clearInterval(promoTimerInterval);
-                promoPopup.style.display = 'none';
+                closePromo();
             }
         });
 
@@ -1130,7 +1136,7 @@
             }
         });
 
-        // Automatic Theme Cycling via Floating Sun Button (Blue default, White, Green, Black)
+        // Automatic Theme Cycling via Floating Sun Button
         const themeToggleMainBtn = document.getElementById('themeToggleMainBtn');
         const themes = ['default', 'white', 'green', 'black'];
 
@@ -1147,14 +1153,12 @@
             let currentIndex = themes.indexOf(currentTheme);
             if (currentIndex === -1) currentIndex = 0;
             
-            // Cycle to the next theme automatically
             let nextIndex = (currentIndex + 1) % themes.length;
             let nextTheme = themes[nextIndex];
 
             applyTheme(nextTheme);
         });
 
-        // Load saved theme preference on page load (Defaults to Blue 'default')
         window.addEventListener('DOMContentLoaded', () => {
             const savedTheme = localStorage.getItem('zamlite_theme');
             if (savedTheme) {
