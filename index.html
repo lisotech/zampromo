@@ -622,13 +622,14 @@
             color: var(--accent-color);
         }
 
-        /* Floating Call and WhatsApp icon group positioned on the center right of the popup card */
+        /* Floating Call and WhatsApp icon group positioned on center right, shifted a bit upper, stacked vertically (one top, one down) */
         .promo-floating-icons {
             position: absolute;
-            top: 50%;
+            top: 42%;
             right: 16px;
             transform: translateY(-50%);
             display: flex;
+            flex-direction: column;
             align-items: center;
             gap: 8px;
             z-index: 10;
@@ -787,7 +788,7 @@
     <!-- Lisotech Innovations Promo Popup Modal (Appears after 7 seconds) -->
     <div class="promo-popup-overlay" id="promoPopup">
         <div class="promo-popup-card">
-            <!-- Floating Call and WhatsApp icon group positioned on the center right of the popping message card -->
+            <!-- Floating Call and WhatsApp icon group positioned on center right, shifted a bit upper, stacked vertically -->
             <div class="promo-floating-icons">
                 <a href="https://wa.me/260974101130" target="_blank" class="promo-icon-btn whatsapp" title="Chat on WhatsApp">
                     <!-- WhatsApp SVG Icon -->
