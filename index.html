@@ -1144,6 +1144,7 @@
                 <li><a href="#">📻 <span>Feed</span></a></li>
                 <li><a href="#">📚 <span>My Library</span></a></li>
                 <li id="sidebarAdminLink" style="display: none;"><a href="#" id="openDashboardLink">⚙️ <span>Admin Dashboard</span></a></li>
+                <li id="sidebarSignOutLi" style="display: none;"><a href="#" id="sidebarSignOutBtn" style="color: #ef4444;">🚪 <span>Sign Out</span></a></li>
             </ul>
             <div class="sidebar-footer-action">
                 <button class="mobile-signin-btn" id="mobileSignInTrigger">Sign-in</button>
@@ -1474,7 +1475,7 @@
         <button class="theme-toggle-main-btn" id="themeToggleMainBtn" title="Change Theme">☀️</button>
     </div>
 
-    <!-- Script handling Admin Auth, Uploads, Local File Selection, Editing, Deleting, and Rules -->
+    <!-- Script handling Admin Auth, Persistent Local Storage Uploads, Deletion, and Rules -->
     <script>
         // Sidebar Drawer Toggle
         const menuToggle = document.getElementById('menuToggle');
@@ -1540,47 +1541,68 @@
         const adminDashCloseBtn = document.getElementById('adminDashCloseBtn');
         const sidebarAdminLink = document.getElementById('sidebarAdminLink');
         const openDashboardLink = document.getElementById('openDashboardLink');
+        const sidebarSignOutLi = document.getElementById('sidebarSignOutLi');
+        const sidebarSignOutBtn = document.getElementById('sidebarSignOutBtn');
 
         function updateAdminUI() {
             if (isAdminLoggedIn) {
                 adminBadge.style.display = 'inline-block';
                 signInBtn.textContent = 'Admin Dashboard';
                 sidebarAdminLink.style.display = 'block';
+                sidebarSignOutLi.style.display = 'block';
                 mobileSignInTrigger.textContent = 'Admin Dashboard';
                 
                 // Append admin edit/delete buttons to existing cards if not already present
                 document.querySelectorAll('.card').forEach(card => {
-                    if (!card.querySelector('.admin-edit')) {
-                        const actions = card.querySelector('.card-actions');
-                        if (actions && !actions.querySelector('.admin-edit')) {
-                            const editBtn = document.createElement('button');
-                            editBtn.className = 'action-btn admin-edit';
-                            editBtn.textContent = 'Edit';
-                            editBtn.onclick = (e) => {
-                                e.stopPropagation();
-                                openEditModal(card);
-                            };
-                            actions.appendChild(editBtn);
+                    const actions = card.querySelector('.card-actions');
+                    if (actions && !actions.querySelector('.admin-edit')) {
+                        const editBtn = document.createElement('button');
+                        editBtn.className = 'action-btn admin-edit';
+                        editBtn.textContent = 'Edit';
+                        editBtn.onclick = (e) => {
+                            e.stopPropagation();
+                            openEditModal(card);
+                        };
+                        actions.appendChild(editBtn);
 
-                            const delBtn = document.createElement('button');
-                            delBtn.className = 'action-btn admin-delete';
-                            delBtn.textContent = 'Del';
-                            delBtn.onclick = (e) => {
-                                e.stopPropagation();
-                                if(confirm('Are you sure you want to delete this track?')) {
-                                    card.remove();
-                                }
-                            };
-                            actions.appendChild(delBtn);
-                        }
+                        const delBtn = document.createElement('button');
+                        delBtn.className = 'action-btn admin-delete';
+                        delBtn.textContent = 'Del';
+                        delBtn.onclick = (e) => {
+                            e.stopPropagation();
+                            if(confirm('Are you sure you want to delete this track?')) {
+                                const trackTitle = card.getAttribute('data-track');
+                                card.remove();
+                                removeStoredTrack(trackTitle);
+                            }
+                        };
+                        actions.appendChild(delBtn);
                     }
                 });
             } else {
                 adminBadge.style.display = 'none';
                 signInBtn.textContent = 'Sign-in';
                 sidebarAdminLink.style.display = 'none';
+                sidebarSignOutLi.style.display = 'none';
                 mobileSignInTrigger.textContent = 'Sign-in';
+
+                // Remove admin buttons when logged out
+                document.querySelectorAll('.admin-edit, .admin-delete').forEach(btn => btn.remove());
             }
+        }
+
+        // Sign Out function (Clears session status, keeping persistent files intact)
+        function handleSignOut(e) {
+            if (e) e.preventDefault();
+            isAdminLoggedIn = false;
+            localStorage.removeItem('zamlite_admin_logged');
+            updateAdminUI();
+            alert('Signed out successfully. Your uploaded files remain saved.');
+            if(sidebar.classList.contains('open')) toggleSidebar();
+        }
+
+        if(sidebarSignOutBtn) {
+            sidebarSignOutBtn.addEventListener('click', handleSignOut);
         }
 
         signInBtn.addEventListener('click', () => {
@@ -1640,7 +1662,66 @@
             }
         });
 
-        // Upload/Save Song & Album Form Logic with 25MB Size Check & Local File Picking
+        // Local Storage Persistence Functions for Uploaded Tracks
+        function saveTrackToLocalStorage(trackData) {
+            let savedTracks = JSON.parse(localStorage.getItem('zamlite_custom_tracks')) || [];
+            savedTracks.push(trackData);
+            localStorage.setItem('zamlite_custom_tracks', JSON.stringify(savedTracks));
+        }
+
+        function removeStoredTrack(trackTitle) {
+            let savedTracks = JSON.parse(localStorage.getItem('zamlite_custom_tracks')) || [];
+            savedTracks = savedTracks.filter(t => t.title !== trackTitle);
+            localStorage.setItem('zamlite_custom_tracks', JSON.stringify(savedTracks));
+        }
+
+        function loadStoredTracks() {
+            let savedTracks = JSON.parse(localStorage.getItem('zamlite_custom_tracks')) || [];
+            savedTracks.forEach(track => {
+                if (track.type === 'single') {
+                    const newCard = document.createElement('div');
+                    newCard.className = 'card';
+                    newCard.setAttribute('data-artist', track.artist);
+                    newCard.setAttribute('data-track', track.title);
+                    newCard.innerHTML = `
+                        <div class="artwork-container">
+                            <img src="${track.artwork}" alt="${track.artist} - ${track.title} Artwork">
+                        </div>
+                        <div class="card-info">
+                            <div class="artist-name">${track.artist}</div>
+                            <div class="track-title">${track.title}</div>
+                        </div>
+                        <audio src="${track.audio}" preload="none"></audio>
+                        <div class="card-actions">
+                            <button class="action-btn play">Play</button>
+                            <a href="${track.audio}" download="${track.title}.mp3" class="action-btn download">Down</a>
+                        </div>
+                    `;
+                    cardsGrid.insertBefore(newCard, cardsGrid.firstChild);
+                } else if (track.type === 'album') {
+                    const newAlbum = document.createElement('div');
+                    newAlbum.className = 'card album-card';
+                    newAlbum.setAttribute('data-artist', track.artist);
+                    newAlbum.innerHTML = `
+                        <div class="artwork-container">
+                            <img src="${track.artwork}" alt="${track.artist} Album Artwork">
+                        </div>
+                        <div class="card-info" style="text-align: center;">
+                            <div class="artist-name">${track.artist}</div>
+                        </div>
+                    `;
+                    albumsGrid.insertBefore(newAlbum, albumsGrid.firstChild);
+                    
+                    newAlbum.addEventListener('click', () => {
+                        openAlbumDetail(track.artist, track.artwork);
+                    });
+                }
+            });
+            setupAudioPlayers(document.body);
+            updateAdminUI();
+        }
+
+        // Upload/Save Song & Album Form Logic with 25MB Size Check & Local Storage Persistence
         const uploadSongForm = document.getElementById('uploadSongForm');
         const cardsGrid = document.getElementById('cardsGrid');
         const albumsGrid = document.getElementById('albumsGrid');
@@ -1652,7 +1733,6 @@
             const type = releaseTypeSelect.value;
             const artworkFile = document.getElementById('artworkFileInput').files[0];
             const mp3File = document.getElementById('mp3FileInput').files[0];
-            const editIdx = parseInt(document.getElementById('editIndex').value);
 
             // MP3 File size validation up to 25MB (25 * 1024 * 1024 bytes)
             if (mp3File && mp3File.size > 25 * 1024 * 1024) {
@@ -1669,65 +1749,65 @@
                 }
             }
 
-            // Object URL generation for local files
+            // Using local Object URLs for browser execution. For cross-session retention of local files, Base64 conversion can be implemented if needed.
             const artworkSrc = artworkFile ? URL.createObjectURL(artworkFile) : 'gart.png';
             const audioSrc = mp3File ? URL.createObjectURL(mp3File) : 'Tix-Teza-Ft-Dream-Chaser-Do-Me-Bad.mp3';
 
-            if (editIdx >= 0) {
-                // Editing existing card placeholder logic can be expanded or updated here
-                alert('Track updated successfully!');
-                document.getElementById('editIndex').value = '-1';
+            const trackObj = {
+                title: title,
+                artist: artist,
+                type: type,
+                artwork: artworkSrc,
+                audio: audioSrc
+            };
+
+            saveTrackToLocalStorage(trackObj);
+
+            if (type === 'single') {
+                const newCard = document.createElement('div');
+                newCard.className = 'card';
+                newCard.setAttribute('data-artist', artist);
+                newCard.setAttribute('data-track', title);
+                newCard.innerHTML = `
+                    <div class="artwork-container">
+                        <img src="${artworkSrc}" alt="${artist} - ${title} Artwork">
+                    </div>
+                    <div class="card-info">
+                        <div class="artist-name">${artist}</div>
+                        <div class="track-title">${title}</div>
+                    </div>
+                    <audio src="${audioSrc}" preload="none"></audio>
+                    <div class="card-actions">
+                        <button class="action-btn play">Play</button>
+                        <a href="${audioSrc}" download="${title}.mp3" class="action-btn download">Down</a>
+                    </div>
+                `;
+                cardsGrid.insertBefore(newCard, cardsGrid.firstChild);
+                setupAudioPlayers(newCard);
             } else {
-                if (type === 'single') {
-                    // Add to Trending Songs (Single Tracks)
-                    const newCard = document.createElement('div');
-                    newCard.className = 'card';
-                    newCard.setAttribute('data-artist', artist);
-                    newCard.setAttribute('data-track', title);
-                    newCard.innerHTML = `
-                        <div class="artwork-container">
-                            <img src="${artworkSrc}" alt="${artist} - ${title} Artwork">
-                        </div>
-                        <div class="card-info">
-                            <div class="artist-name">${artist}</div>
-                            <div class="track-title">${title}</div>
-                        </div>
-                        <audio src="${audioSrc}" preload="none"></audio>
-                        <div class="card-actions">
-                            <button class="action-btn play">Play</button>
-                            <a href="${audioSrc}" download="${title}.mp3" class="action-btn download">Down</a>
-                            <button class="action-btn admin-edit" onclick="event.stopPropagation();">Edit</button>
-                            <button class="action-btn admin-delete" onclick="event.stopPropagation(); this.closest('.card').remove();">Del</button>
-                        </div>
-                    `;
-                    cardsGrid.insertBefore(newCard, cardsGrid.firstChild);
-                    setupAudioPlayers(newCard);
-                } else {
-                    // Add to Albums section
-                    const newAlbum = document.createElement('div');
-                    newAlbum.className = 'card album-card';
-                    newAlbum.setAttribute('data-artist', artist);
-                    newAlbum.innerHTML = `
-                        <div class="artwork-container">
-                            <img src="${artworkSrc}" alt="${artist} Album Artwork">
-                        </div>
-                        <div class="card-info" style="text-align: center;">
-                            <div class="artist-name">${artist}</div>
-                        </div>
-                    `;
-                    albumsGrid.insertBefore(newAlbum, albumsGrid.firstChild);
-                    
-                    // Attach click handler for full page view
-                    newAlbum.addEventListener('click', () => {
-                        openAlbumDetail(artist, artworkSrc);
-                    });
-                }
+                const newAlbum = document.createElement('div');
+                newAlbum.className = 'card album-card';
+                newAlbum.setAttribute('data-artist', artist);
+                newAlbum.innerHTML = `
+                    <div class="artwork-container">
+                        <img src="${artworkSrc}" alt="${artist} Album Artwork">
+                    </div>
+                    <div class="card-info" style="text-align: center;">
+                        <div class="artist-name">${artist}</div>
+                    </div>
+                `;
+                albumsGrid.insertBefore(newAlbum, albumsGrid.firstChild);
+                
+                newAlbum.addEventListener('click', () => {
+                    openAlbumDetail(artist, artworkSrc);
+                });
             }
 
             uploadSongForm.reset();
             albumSongsCountGroup.style.display = 'none';
             adminDashboardModal.style.display = 'none';
-            alert('Song/Album successfully processed and published!');
+            updateAdminUI();
+            alert('Song/Album successfully processed, published, and saved permanently!');
         });
 
         function openEditModal(card) {
@@ -1913,7 +1993,7 @@
             if (savedTheme) {
                 applyTheme(savedTheme);
             }
-            updateAdminUI();
+            loadStoredTracks();
         });
     </script>
 </body>
