@@ -1,0 +1,1537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZAMLITE MEDIA</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <style>
+        :root {
+            --bg-color: #0f172a;          /* Slate Dark Grey/Blue (Default Blue Theme) */
+            --sidebar-bg: #090d16;        
+            --card-bg: #1e293b;          
+            --card-hover: #334155;        
+            --text-color: #f8fafc;        
+            --text-muted: #94a3b8;        
+            --accent-color: #3b82f6;      
+            --accent-hover: #60a5fa;      
+            --border-color: #334155;      
+        }
+
+        /* Theme Variations */
+        body.theme-white {
+            --bg-color: #f1f5f9;
+            --sidebar-bg: #e2e8f0;
+            --card-bg: #ffffff;
+            --card-hover: #f8fafc;
+            --text-color: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #cbd5e1;
+        }
+
+        body.theme-green {
+            --bg-color: #064e3b;
+            --sidebar-bg: #022c22;
+            --card-bg: #065f46;
+            --card-hover: #047857;
+            --text-color: #ecfdf5;
+            --text-muted: #a7f3d0;
+            --accent-color: #10b981;
+            --accent-hover: #34d399;
+            --border-color: #047857;
+        }
+
+        body.theme-black {
+            --bg-color: #000000;
+            --sidebar-bg: #0a0a0a;
+            --card-bg: #121212;
+            --card-hover: #1f1f1f;
+            --text-color: #ffffff;
+            --text-muted: #a1a1aa;
+            --accent-color: #3f3f46;
+            --accent-hover: #52525b;
+            --border-color: #27272a;
+        }
+
+        /* Specific override for black theme to make MEDIA span orange */
+        body.theme-black .logo-text-stack span,
+        body.theme-black .mobile-brand-logo .logo-text-stack span {
+            color: #f97316 !important;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+            width: 100%;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* App Layout Wrapper */
+        .app-layout {
+            display: flex;
+            width: 100%;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Desktop Sidebar Navigation */
+        aside.sidebar {
+            width: 240px;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 200;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        .sidebar-logo-container {
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            line-height: 1.1;
+        }
+
+        .logo img {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .logo-text-stack {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo-text-stack span {
+            color: var(--accent-color);
+            transition: color 0.3s ease;
+        }
+
+        .sidebar-close-btn {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.3rem;
+            cursor: pointer;
+            display: none;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 8px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+        }
+
+        .sidebar-menu .menu-category-title {
+            padding: 10px 16px 4px 16px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+
+        .sidebar-menu li a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-menu li.active a,
+        .sidebar-menu li a:hover {
+            color: var(--text-color);
+            background-color: var(--card-bg);
+        }
+
+        .sidebar-menu li.active a {
+            color: var(--accent-color);
+        }
+
+        .sidebar-footer-action {
+            padding: 12px 16px;
+            border-top: 1px solid var(--border-color);
+            display: none;
+        }
+
+        .mobile-signin-btn {
+            display: block;
+            width: 100%;
+            background-color: var(--accent-color);
+            color: #fff;
+            border: none;
+            padding: 8px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+
+        .mobile-signin-btn:hover {
+            background-color: var(--accent-hover);
+        }
+
+        /* Main Content Wrapper */
+        .main-wrapper {
+            margin-left: 240px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            width: calc(100% - 240px);
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        /* Top Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 16px;
+            border-bottom: 1px solid var(--border-color);
+            background-color: var(--bg-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            gap: 12px;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            max-width: 500px;
+        }
+
+        .mobile-brand-logo {
+            display: none;
+            font-weight: 800;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+            color: var(--text-color);
+            white-space: nowrap;
+            text-decoration: none;
+            align-items: center;
+            gap: 8px;
+            line-height: 1.1;
+        }
+
+        .mobile-brand-logo img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .mobile-brand-logo .logo-text-stack span {
+            color: var(--accent-color);
+            transition: color 0.3s ease;
+        }
+
+        .header-search-container {
+            flex: 1;
+            position: relative;
+        }
+
+        .search-bar {
+            background: var(--card-bg);
+            padding: 6px 12px 6px 34px;
+            border-radius: 20px;
+            color: var(--text-color);
+            font-size: 0.85rem;
+            border: 1px solid var(--border-color);
+            outline: none;
+            width: 100%;
+            transition: border-color 0.2s, background-color 0.3s ease;
+        }
+
+        .search-bar::placeholder {
+            color: var(--text-muted);
+        }
+
+        .search-bar:focus {
+            border-color: var(--accent-color);
+        }
+
+        .header-search-container::before {
+            content: "🔍";
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.75rem;
+            opacity: 0.6;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sign-in-btn {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 0.85rem;
+            cursor: pointer;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .sign-in-btn:hover {
+            color: var(--accent-color);
+        }
+
+        .menu-toggle {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+        }
+
+        .menu-toggle:hover {
+            background-color: var(--card-bg);
+        }
+
+        /* Content Area */
+        .content-area {
+            padding: 24px;
+            flex: 1;
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        /* Hero Banner */
+        .hero-banner {
+            margin-bottom: 28px;
+            padding: 30px;
+            background: linear-gradient(135deg, var(--card-bg), var(--bg-color));
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+        }
+
+        .hero-text h1 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .hero-text h1 span {
+            color: var(--accent-color);
+        }
+
+        .hero-banner p {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: var(--text-muted);
+            max-width: 600px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--text-color);
+            letter-spacing: 0.5px;
+        }
+
+        .view-all-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .view-all-link:hover {
+            color: var(--text-color);
+        }
+
+        /* Trending Songs Grid Layout */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+            width: 100%;
+        }
+
+        /* Featured Albums / Artists Grid Layout */
+        /* Desktop Computer: Exactly 8 columns (8x8 max layout capability) */
+        .albums-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
+            width: 100%;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+            cursor: pointer;
+            min-width: 0;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            background-color: var(--card-hover);
+        }
+
+        .artwork-container {
+            width: 100%;
+            aspect-ratio: 1;
+            background-color: var(--bg-color);
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .artwork-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .card-info {
+            margin-bottom: 8px;
+            min-width: 0;
+        }
+
+        .artist-name {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: var(--text-color);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .track-title {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .action-btn {
+            flex: 1;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            font-size: 0.7rem;
+            padding: 6px 0;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            text-align: center;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s ease;
+        }
+
+        .action-btn.play {
+            background-color: var(--accent-color);
+            color: #fff;
+            border-color: var(--accent-color);
+        }
+
+        .action-btn.play:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .action-btn:not(.play):hover {
+            background-color: var(--card-hover);
+        }
+
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            padding: 40px 0;
+            display: none;
+        }
+
+        /* Full Page Artist Profile & Song Detail View (Opens on Artist/Album Selection) */
+        .album-detail-view {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: var(--bg-color);
+            z-index: 1000;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 24px;
+            box-sizing: border-box;
+        }
+
+        .album-detail-view.active {
+            display: block;
+        }
+
+        .back-to-home-btn {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .back-to-home-btn:hover {
+            background-color: var(--card-hover);
+        }
+
+        .album-detail-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .album-detail-art {
+            width: 150px;
+            height: 150px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .album-detail-info h2 {
+            font-size: 1.8rem;
+            color: var(--text-color);
+            margin-bottom: 4px;
+        }
+
+        .album-detail-info p {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        /* Footer */
+        footer {
+            padding: 10px 16px;
+            text-align: center;
+            border-top: 1px solid var(--border-color);
+            background-color: var(--bg-color);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        @media (min-width: 768px) {
+            footer {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+        }
+
+        .designer-credit {
+            font-style: italic;
+            color: var(--text-muted);
+        }
+
+        /* Floating Theme Switcher Widget */
+        .theme-switcher-float {
+            position: fixed;
+            top: 38%;
+            right: 20px;
+            transform: translateY(-50%);
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+        }
+
+        .theme-toggle-main-btn {
+            background-color: var(--accent-color);
+            color: #fff;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.95rem;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .theme-toggle-main-btn:hover {
+            transform: scale(1.05);
+            background-color: var(--accent-hover);
+        }
+
+        /* Promo Popup Modal Styles */
+        .promo-popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.75);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .promo-popup-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            max-width: 520px;
+            width: 100%;
+            padding: 16px 20px;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            max-height: 70vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .promo-popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 6px;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .promo-header-left {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            padding-right: 25px;
+        }
+
+        .promo-popup-title {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--accent-color);
+        }
+
+        .promo-floating-icons {
+            position: absolute;
+            top: 42%;
+            right: 16px;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .promo-icon-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+            transition: transform 0.2s;
+        }
+
+        .promo-icon-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .promo-icon-btn.whatsapp {
+            background-color: #25D366;
+            color: #ffffff;
+        }
+
+        .promo-icon-btn.call {
+            background-color: #3b82f6;
+            color: #ffffff;
+        }
+
+        .promo-icon-btn svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+
+        .promo-close-btn {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.4rem;
+            cursor: pointer;
+            font-weight: bold;
+            line-height: 1;
+            margin-top: 2px;
+        }
+
+        .promo-close-btn:hover {
+            color: var(--accent-color);
+        }
+
+        .promo-body {
+            font-size: 0.85rem;
+            color: var(--text-color);
+            line-height: 1.4;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .promo-timer-text {
+            font-size: 0.8rem;
+            color: var(--accent-color);
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+
+        .promo-section-title {
+            font-weight: 700;
+            color: var(--text-color);
+            margin-top: 4px;
+        }
+
+        .promo-list {
+            list-style-type: disc;
+            padding-left: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            color: var(--text-muted);
+        }
+
+        .promo-list li span {
+            color: var(--text-color);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.6);
+            z-index: 150;
+            display: none;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        /* Responsive Layout Adjustments for Mobile & Tablets */
+        @media (max-width: 1024px) {
+            aside.sidebar {
+                transform: translateX(-100%);
+                width: 260px;
+                box-shadow: 5px 0 15px rgba(0,0,0,0.5);
+            }
+
+            aside.sidebar.open {
+                transform: translateX(0);
+            }
+
+            .sidebar-close-btn {
+                display: block;
+            }
+
+            .sidebar-footer-action {
+                display: block;
+            }
+
+            .sign-in-btn {
+                display: none;
+            }
+
+            .mobile-brand-logo {
+                display: inline-flex;
+            }
+
+            .main-wrapper {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .cards-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+            }
+
+            /* Mobile Albums View: strictly 3x3 layout showing only artist name */
+            .albums-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Promo Popup Modal -->
+    <div class="promo-popup-overlay" id="promoPopup">
+        <div class="promo-popup-card">
+            <div class="promo-floating-icons">
+                <a href="https://wa.me/260974101130" target="_blank" class="promo-icon-btn whatsapp" title="Chat on WhatsApp">
+                    <svg viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+                </a>
+                <a href="tel:+260974101130" class="promo-icon-btn call" title="Call Us">
+                    <svg viewBox="0 0 24 24"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 0 0-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/></svg>
+                </a>
+            </div>
+
+            <div class="promo-popup-header">
+                <div class="promo-header-left">
+                    <div class="promo-popup-title">Lisotech Innovations Promo</div>
+                </div>
+                <button class="promo-popup-close promo-close-btn" id="promoCloseBtn">&times;</button>
+            </div>
+            <div class="promo-body">
+                <div class="promo-timer-text" id="promoTimerText">This promo message will automatically close in 3:00</div>
+                <p><em>for quick response Call or WhatsApp us +260974101130</em></p>
+                <p style="font-weight: bold; color: var(--accent-color);">SAMSON LISOMONA <em>CEO &amp; Founder @Lisotech Innovations</em></p>
+                <p><em>Get yourself the following services on promotion</em></p>
+                
+                <div class="promo-section-title">1. Website Development</div>
+                <ul class="promo-list">
+                    <li><span>i. individual web</span> - comes .com and free one year hosting and domain</li>
+                    <li><span>ii. Company web</span> - comes .com and free one year hosting and domain</li>
+                </ul>
+
+                <div class="promo-section-title">2. Company registration and Compliance</div>
+                <p style="font-size: 0.8rem; font-weight: bold; margin-top: 2px;">A. PACRA Services</p>
+                <ul class="promo-list">
+                    <li><span>i. Business</span> - it comes with PACRA Business Certificate</li>
+                    <li><span>ii. Limited Company</span> - it comes with PACRA incorporation certificate &amp; ZRA T-PIN Certificate after the registration process</li>
+                    <li><span>iii. PACRA Annual Returns</span></li>
+                </ul>
+
+                <p style="font-size: 0.8rem; font-weight: bold; margin-top: 4px;">2. ZRA Service</p>
+                <ul class="promo-list">
+                    <li><span>i. T-PIN Registration</span></li>
+                    <li><span>ii. ZRA Tax type Registration</span></li>
+                    <li><span>iii. Monthly Returns (TOT &amp; PAYE)</span></li>
+                    <li><span>iv. Smart Invoice Services</span></li>
+                </ul>
+
+                <div class="promo-section-title">3. ZPPA Registration and Certificate Renewal and etc.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Full Page Artist Profile & Song Viewer (Opens on Selecting Artist/Album Profile) -->
+    <div class="album-detail-view" id="albumDetailView">
+        <button class="back-to-home-btn" id="backToHomeBtn">&#8592; Back to Home</button>
+        <div class="album-detail-header">
+            <img src="gart.png" alt="Artist Profile Art" class="album-detail-art" id="detailAlbumArt">
+            <div class="album-detail-info">
+                <h2 id="detailAlbumTitle">Artist Name</h2>
+                <p id="detailArtistName">Featured Songs</p>
+            </div>
+        </div>
+        <div class="section-header">
+            <div class="section-title">Artist Songs</div>
+        </div>
+        <div class="cards-grid" id="detailSongsGrid">
+            <!-- Dynamically populated songs for the selected artist profile -->
+        </div>
+    </div>
+
+    <div class="app-layout">
+        <!-- Sidebar Navigation Drawer -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-logo-container">
+                <a href="#" class="logo">
+                    <img src="logo.png" alt="Logo">
+                    <div class="logo-text-stack">
+                        ZAMLITE
+                        <span>MEDIA</span>
+                    </div>
+                </a>
+                <button class="sidebar-close-btn" id="sidebarCloseBtn">&times;</button>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="menu-category-title">Browse</li>
+                <li class="active"><a href="#">📂 <span>Discover</span></a></li>
+                <li><a href="#">📈 <span>Charts</span></a></li>
+                <li><a href="#">🎵 <span>Playlists</span></a></li>
+                <li><a href="#">📻 <span>Feed</span></a></li>
+                <li><a href="#">📚 <span>My Library</span></a></li>
+            </ul>
+            <div class="sidebar-footer-action">
+                <button class="mobile-signin-btn">Sign-in</button>
+            </div>
+        </aside>
+
+        <!-- Main Wrapper -->
+        <div class="main-wrapper">
+            <!-- Header -->
+            <header>
+                <div class="header-left">
+                    <a href="#" class="mobile-brand-logo">
+                        <img src="logo.png" alt="Logo">
+                        <div class="logo-text-stack">
+                            ZAMLITE
+                            <span>MEDIA</span>
+                        </div>
+                    </a>
+                    <div class="header-search-container">
+                        <input type="text" id="searchInput" class="search-bar" placeholder="Search artists or track...">
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="sign-in-btn">Sign-in</button>
+                    <button class="menu-toggle" id="menuToggle" aria-label="Toggle Menu">&#9776;</button>
+                </div>
+            </header>
+
+            <!-- Main Content Area -->
+            <div class="content-area">
+                <!-- Hero Banner -->
+                <section class="hero-banner">
+                    <div class="hero-text">
+                        <h1>The music platform empowering <span>artists</span></h1>
+                        <p>The music platform that helps the artists to connect with their fans. Zamlite Music, we are here for you.</p>
+                    </div>
+                </section>
+
+                <!-- Trending Songs Section -->
+                <section>
+                    <div class="section-header">
+                        <div class="section-title">Trending Songs</div>
+                        <a href="#" class="view-all-link">VIEW ALL</a>
+                    </div>
+                    
+                    <div class="cards-grid" id="cardsGrid">
+                        <!-- Card 1 (Updated Audio Source: Tix-Teza-Ft-Dream-Chaser-Do-Me-Bad.mp3) -->
+                        <div class="card" data-artist="Tix'Teza Feat Dream Chaser" data-track="Do Me Bad">
+                            <div class="artwork-container">
+                                <img src="tix.png" alt="Tix'Teza Feat Dream Chaser - Do Me Bad Artwork">
+                            </div>
+                            <div class="card-info">
+                                <div class="artist-name">Tix'Teza Feat Dream Chaser</div>
+                                <div class="track-title">Do Me Bad</div>
+                            </div>
+                            <audio src="Tix-Teza-Ft-Dream-Chaser-Do-Me-Bad.mp3" preload="none"></audio>
+                            <div class="card-actions">
+                                <button class="action-btn play">Play</button>
+                                <a href="Tix-Teza-Ft-Dream-Chaser-Do-Me-Bad.mp3" download="Tix-Teza-Ft-Dream-Chaser-Do-Me-Bad.mp3" class="action-btn download">Down</a>
+                            </div>
+                        </div>
+
+                        <!-- Card 2 -->
+                        <div class="card" data-artist="Egyptian" data-track="Drums of Pharaoh">
+                            <div class="artwork-container">
+                                <img src="gart.png" alt="Egyptian - Drums of Pharaoh Artwork">
+                            </div>
+                            <div class="card-info">
+                                <div class="artist-name">Egyptian</div>
+                                <div class="track-title">Drums of Pharaoh</div>
+                            </div>
+                            <audio src="Egyptian-Pharaoh-Drums of Pharaoh.mp3" preload="none"></audio>
+                            <div class="card-actions">
+                                <button class="action-btn play">Play</button>
+                                <a href="Egyptian-Pharaoh-Drums of Pharaoh.mp3" download="Egyptian-Pharaoh-Drums of Pharaoh.mp3" class="action-btn download">Down</a>
+                            </div>
+                        </div>
+
+                        <!-- Card 3 -->
+                        <div class="card" data-artist="Driemo Ft Y-Maps" data-track="Ninvela So">
+                            <div class="artwork-container">
+                                <img src="gart.png" alt="Driemo Ft Y-Maps - Ninvela So Artwork">
+                            </div>
+                            <div class="card-info">
+                                <div class="artist-name">Driemo Ft Y-Maps</div>
+                                <div class="track-title">Ninvela So</div>
+                            </div>
+                            <audio src="Driemo-ft-Yo-Maps-Ninvela-So.mp3" preload="none"></audio>
+                            <div class="card-actions">
+                                <button class="action-btn play">Play</button>
+                                <a href="Driemo-ft-Yo-Maps-Ninvela-So.mp3" download="Driemo-ft-Yo-Maps-Ninvela-So.mp3" class="action-btn download">Down</a>
+                            </div>
+                        </div>
+
+                        <!-- Card 4 -->
+                        <div class="card" data-artist="Driemo Ft Kae Chaps" data-track="Poko">
+                            <div class="artwork-container">
+                                <img src="gart.png" alt="Driemo Ft Kae Chaps - Poko Artwork">
+                            </div>
+                            <div class="card-info">
+                                <div class="artist-name">Driemo Ft Kae Chaps</div>
+                                <div class="track-title">Poko</div>
+                            </div>
+                            <audio src="Driemo-ft-Kae-Chaps-Poko.mp3" preload="none"></audio>
+                            <div class="card-actions">
+                                <button class="action-btn play">Play</button>
+                                <a href="Driemo-ft-Kae-Chaps-Poko.mp3" download="Driemo-ft-Kae-Chaps-Poko.mp3" class="action-btn download">Down</a>
+                            </div>
+                        </div>
+
+                        <!-- Card 5 -->
+                        <div class="card" data-artist="Dove Dee" data-track="Blame Me">
+                            <div class="artwork-container">
+                                <img src="gart.png" alt="Dove Dee - Blame Me Artwork">
+                            </div>
+                            <div class="card-info">
+                                <div class="artist-name">Dove Dee</div>
+                                <div class="track-title">Blame Me</div>
+                            </div>
+                            <audio src="Dove-Dee-ft-Goddy-Zambia-Blame-Me.mp3" preload="none"></audio>
+                            <div class="card-actions">
+                                <button class="action-btn play">Play</button>
+                                <a href="Dove-Dee-ft-Goddy-Zambia-Blame-Me.mp3" download="Dove-Dee-ft-Goddy-Zambia-Blame-Me.mp3" class="action-btn download">Down</a>
+                            </div>
+                        </div>
+
+                        <!-- Card 6 -->
+                        <div class="card" data-artist="Kayz Adams" data-track="Revolution">
+                            <div class="artwork-container">
+                                <img src="gart.png" alt="Kayz Adams - Revolution Artwork">
+                            </div>
+                            <div class="card-info">
+                                <div class="artist-name">Kayz Adams</div>
+                                <div class="track-title">Revolution</div>
+                            </div>
+                            <audio src="Kayz-Adams-Revolution.mp3" preload="none"></audio>
+                            <div class="card-actions">
+                                <button class="action-btn play">Play</button>
+                                <a href="Kayz-Adams-Revolution.mp3" download="Kayz-Adams-Revolution.mp3" class="action-btn download">Down</a>
+                            </div>
+                        </div>
+
+                        <!-- Card 7 -->
+                        <div class="card" data-artist="Rockstone Ft Yo-Maps" data-track="Bushe">
+                            <div class="artwork-container">
+                                <img src="gart.png" alt="Rockstone Ft Yo-Maps - Bushe Artwork">
+                            </div>
+                            <div class="card-info">
+                                <div class="artist-name">Rockstone Ft Yo-Maps</div>
+                                <div class="track-title">Bushe</div>
+                            </div>
+                            <audio src="Rockstone-Ft-Yo-Maps-Bushe.mp3" preload="none"></audio>
+                            <div class="card-actions">
+                                <button class="action-btn play">Play</button>
+                                <a href="Rockstone-Ft-Yo-Maps-Bushe.mp3" download="Rockstone-Ft-Yo-Maps-Bushe.mp3" class="action-btn download">Down</a>
+                            </div>
+                        </div>
+
+                        <!-- Card 8 -->
+                        <div class="card" data-artist="Jay-Rox Ft Slapdee" data-track="Finally">
+                            <div class="artwork-container">
+                                <img src="gart.png" alt="Jay-Rox Ft Slapdee - Finally Artwork">
+                            </div>
+                            <div class="card-info">
+                                <div class="artist-name">Jay-Rox Ft Slapdee</div>
+                                <div class="track-title">Finally</div>
+                            </div>
+                            <audio src="Jay-Rox-ft-Slapdee-Finally.mp3" preload="none"></audio>
+                            <div class="card-actions">
+                                <button class="action-btn play">Play</button>
+                                <a href="Jay-Rox-ft-Slapdee-Finally.mp3" download="Jay-Rox-ft-Slapdee-Finally.mp3" class="action-btn download">Down</a>
+                            </div>
+                        </div>
+
+                        <!-- Card 9 -->
+                        <div class="card" data-artist="Alpha-Romeo Ft Chewe" data-track="Update 2">
+                            <div class="artwork-container">
+                                <img src="gart.png" alt="Alpha-Romeo Ft Chewe - Update 2 Artwork">
+                            </div>
+                            <div class="card-info">
+                                <div class="artist-name">Alpha-Romeo Ft Chewe</div>
+                                <div class="track-title">Update 2</div>
+                            </div>
+                            <audio src="Alpha-Romeo-ft-Chewe-Update-2.mp3" preload="none"></audio>
+                            <div class="card-actions">
+                                <button class="action-btn play">Play</button>
+                                <a href="Alpha-Romeo-ft-Chewe-Update-2.mp3" download="Alpha-Romeo-ft-Chewe-Update-2.mp3" class="action-btn download">Down</a>
+                            </div>
+                        </div>
+
+                        <!-- Card 10 -->
+                        <div class="card" data-artist="Macky-2" data-track="Soilange">
+                            <div class="artwork-container">
+                                <img src="gart.png" alt="Macky-2 - Soilange Artwork">
+                            </div>
+                            <div class="card-info">
+                                <div class="artist-name">Macky-2</div>
+                                <div class="track-title">Soilange</div>
+                            </div>
+                            <audio src="Macky-2-Soilange.mp3" preload="none"></audio>
+                            <div class="card-actions">
+                                <button class="action-btn play">Play</button>
+                                <a href="Macky-2-Soilange.mp3" download="Macky-2-Soilange.mp3" class="action-btn download">Down</a>
+                            </div>
+                        </div>
+
+                        <!-- Card 11 -->
+                        <div class="card" data-artist="T-Sean Ft Chef 187" data-track="Injato">
+                            <div class="artwork-container">
+                                <img src="gart.png" alt="T-Sean Ft Chef 187 - Injato Artwork">
+                            </div>
+                            <div class="card-info">
+                                <div class="artist-name">T-Sean Ft Chef 187</div>
+                                <div class="track-title">Injato</div>
+                            </div>
+                            <audio src="T-Sean-Ft-Chef-187-Injato.mp3" preload="none"></audio>
+                            <div class="card-actions">
+                                <button class="action-btn play">Play</button>
+                                <a href="T-Sean-Ft-Chef-187-Injato.mp3" download="T-Sean-Ft-Chef-187-Injato.mp3" class="action-btn download">Down</a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Featured Albums / Artists Section -->
+                <section>
+                    <div class="section-header">
+                        <div class="section-title">Featured Albums &amp; Artists</div>
+                        <a href="#" class="view-all-link">VIEW ALL</a>
+                    </div>
+                    
+                    <div class="albums-grid" id="albumsGrid">
+                        <!-- Artist 1 -->
+                        <div class="card album-card" data-artist="Tix'Teza Feat Dream Chaser">
+                            <div class="artwork-container">
+                                <img src="tix.png" alt="Tix'Teza Feat Dream Chaser Artwork">
+                            </div>
+                            <div class="card-info" style="text-align: center;">
+                                <div class="artist-name">Tix'Teza Feat Dream Chaser</div>
+                            </div>
+                        </div>
+
+                        <!-- Artist 2 -->
+                        <div class="card album-card" data-artist="Egyptian">
+                            <div class="artwork-container">
+                                <img src="gart.png" alt="Egyptian Artwork">
+                            </div>
+                            <div class="card-info" style="text-align: center;">
+                                <div class="artist-name">Egyptian</div>
+                            </div>
+                        </div>
+
+                        <!-- Artist 3 -->
+                        <div class="card album-card" data-artist="Dove Dee">
+                            <div class="artwork-container">
+                                <img src="gart.png" alt="Dove Dee Artwork">
+                            </div>
+                            <div class="card-info" style="text-align: center;">
+                                <div class="artist-name">Dove Dee</div>
+                            </div>
+                        </div>
+
+                        <!-- Artist 4 -->
+                        <div class="card album-card" data-artist="Jay-Rox Ft Slapdee">
+                            <div class="artwork-container">
+                                <img src="gart.png" alt="Jay-Rox Ft Slapdee Artwork">
+                            </div>
+                            <div class="card-info" style="text-align: center;">
+                                <div class="artist-name">Jay-Rox Ft Slapdee</div>
+                            </div>
+                        </div>
+
+                        <!-- Artist 5 -->
+                        <div class="card album-card" data-artist="Driemo Ft Y-Maps">
+                            <div class="artwork-container">
+                                <img src="gart.png" alt="Driemo Ft Y-Maps Artwork">
+                            </div>
+                            <div class="card-info" style="text-align: center;">
+                                <div class="artist-name">Driemo Ft Y-Maps</div>
+                            </div>
+                        </div>
+
+                        <!-- Artist 6 -->
+                        <div class="card album-card" data-artist="Kayz Adams">
+                            <div class="artwork-container">
+                                <img src="gart.png" alt="Kayz Adams Artwork">
+                            </div>
+                            <div class="card-info" style="text-align: center;">
+                                <div class="artist-name">Kayz Adams</div>
+                            </div>
+                        </div>
+
+                        <!-- Artist 7 -->
+                        <div class="card album-card" data-artist="Rockstone Ft Yo-Maps">
+                            <div class="artwork-container">
+                                <img src="gart.png" alt="Rockstone Ft Yo-Maps Artwork">
+                            </div>
+                            <div class="card-info" style="text-align: center;">
+                                <div class="artist-name">Rockstone Ft Yo-Maps</div>
+                            </div>
+                        </div>
+
+                        <!-- Artist 8 -->
+                        <div class="card album-card" data-artist="Alpha-Romeo Ft Chewe">
+                            <div class="artwork-container">
+                                <img src="gart.png" alt="Alpha-Romeo Ft Chewe Artwork">
+                            </div>
+                            <div class="card-info" style="text-align: center;">
+                                <div class="artist-name">Alpha-Romeo Ft Chewe</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="no-results" id="noResults">No tracks or artists found matching your search.</div>
+                </section>
+            </div>
+
+            <!-- Footer -->
+            <footer>
+                <p>&copy; ZAMLITE MEDIA || All Rights Reserved</p>
+                <marquee><p class="designer-credit">Designed @ LISOTECH Call or WhatsApp +260974101130</p></marquee>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Floating Theme Switcher Widget -->
+    <div class="theme-switcher-float" id="themeSwitcherFloat">
+        <button class="theme-toggle-main-btn" id="themeToggleMainBtn" title="Change Theme">☀️</button>
+    </div>
+
+    <!-- Script handling interactions, full page view, 8x8 desktop & 3x3 mobile grids -->
+    <script>
+        // Sidebar Drawer Toggle
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('open');
+            sidebarOverlay.classList.toggle('active');
+        }
+
+        menuToggle.addEventListener('click', toggleSidebar);
+        sidebarCloseBtn.addEventListener('click', toggleSidebar);
+        sidebarOverlay.addEventListener('click', toggleSidebar);
+
+        // Promo Popup 7-Second Delay & 3-Minute Countdown
+        const promoPopup = document.getElementById('promoPopup');
+        const promoCloseBtn = document.getElementById('promoCloseBtn');
+        const promoTimerText = document.getElementById('promoTimerText');
+        
+        let promoTimerInterval;
+        let timeLeft = 180;
+
+        setTimeout(() => {
+            promoPopup.style.display = 'flex';
+            
+            promoTimerInterval = setInterval(() => {
+                timeLeft--;
+                let minutes = Math.floor(timeLeft / 60);
+                let seconds = timeLeft % 60;
+                promoTimerText.textContent = `This promo message will automatically close in ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(promoTimerInterval);
+                    promoPopup.style.display = 'none';
+                }
+            }, 1000);
+        }, 7000);
+
+        function closePromo() {
+            if (promoTimerInterval) clearInterval(promoTimerInterval);
+            promoPopup.style.display = 'none';
+        }
+
+        promoCloseBtn.addEventListener('click', closePromo);
+        promoPopup.addEventListener('click', (e) => {
+            if (e.target === promoPopup) {
+                closePromo();
+            }
+        });
+
+        // Dataset mapping artists to their respective songs and artwork (Updated Audio Source)
+        const artistSongsData = {
+            "Tix'Teza Feat Dream Chaser": [
+                { artist: "Tix'Teza Feat Dream Chaser", track: "Do Me Bad", src: "Tix-Teza-Ft-Dream-Chaser-Do-Me-Bad.mp3", img: "tix.png" }
+            ],
+            "Egyptian": [
+                { artist: "Egyptian", track: "Drums of Pharaoh", src: "Egyptian-Pharaoh-Drums of Pharaoh.mp3", img: "gart.png" }
+            ],
+            "Dove Dee": [
+                { artist: "Dove Dee", track: "Blame Me", src: "Dove-Dee-ft-Goddy-Zambia-Blame-Me.mp3", img: "gart.png" }
+            ],
+            "Jay-Rox Ft Slapdee": [
+                { artist: "Jay-Rox Ft Slapdee", track: "Finally", src: "Jay-Rox-ft-Slapdee-Finally.mp3", img: "gart.png" }
+            ],
+            "Driemo Ft Y-Maps": [
+                { artist: "Driemo Ft Y-Maps", track: "Ninvela So", src: "Driemo-ft-Yo-Maps-Ninvela-So.mp3", img: "gart.png" }
+            ],
+            "Kayz Adams": [
+                { artist: "Kayz Adams", track: "Revolution", src: "Kayz-Adams-Revolution.mp3", img: "gart.png" }
+            ],
+            "Rockstone Ft Yo-Maps": [
+                { artist: "Rockstone Ft Yo-Maps", track: "Bushe", src: "Rockstone-Ft-Yo-Maps-Bushe.mp3", img: "gart.png" }
+            ],
+            "Alpha-Romeo Ft Chewe": [
+                { artist: "Alpha-Romeo Ft Chewe", track: "Update 2", src: "Alpha-Romeo-ft-Chewe-Update-2.mp3", img: "gart.png" }
+            ]
+        };
+
+        // Full Page View Handler for Artists / Albums Profile Selection
+        const albumDetailView = document.getElementById('albumDetailView');
+        const backToHomeBtn = document.getElementById('backToHomeBtn');
+        const detailAlbumArt = document.getElementById('detailAlbumArt');
+        const detailAlbumTitle = document.getElementById('detailAlbumTitle');
+        const detailArtistName = document.getElementById('detailArtistName');
+        const detailSongsGrid = document.getElementById('detailSongsGrid');
+
+        document.querySelectorAll('.album-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const artistName = card.getAttribute('data-artist');
+                const imgElement = card.querySelector('img');
+                const artistImgSrc = imgElement ? imgElement.src : 'gart.png';
+
+                detailAlbumTitle.textContent = artistName;
+                detailArtistName.textContent = "Artist Profile & Songs";
+                detailAlbumArt.src = artistImgSrc;
+                
+                // Populate songs specifically matching the selected artist
+                detailSongsGrid.innerHTML = '';
+                const songs = artistSongsData[artistName] || [];
+
+                if (songs.length === 0) {
+                    detailSongsGrid.innerHTML = '<div class="no-results" style="display:block;">No songs available for this artist yet.</div>';
+                } else {
+                    songs.forEach(song => {
+                        const songCard = document.createElement('div');
+                        songCard.className = 'card';
+                        songCard.innerHTML = `
+                            <div class="artwork-container">
+                                <img src="${song.img}" alt="${song.track} Artwork">
+                            </div>
+                            <div class="card-info">
+                                <div class="artist-name">${song.artist}</div>
+                                <div class="track-title">${song.track}</div>
+                            </div>
+                            <audio src="${song.src}" preload="none"></audio>
+                            <div class="card-actions">
+                                <button class="action-btn play">Play</button>
+                                <a href="${song.src}" download="${song.src}" class="action-btn download">Down</a>
+                            </div>
+                        `;
+                        detailSongsGrid.appendChild(songCard);
+                    });
+                }
+
+                // Attach audio playback listeners to the newly created song cards inside the full view
+                setupAudioPlayers(detailSongsGrid);
+
+                albumDetailView.classList.add('active');
+            });
+        });
+
+        backToHomeBtn.addEventListener('click', () => {
+            albumDetailView.classList.remove('active');
+            // Pause any playing audio when closing full page view
+            document.querySelectorAll('audio').forEach(a => {
+                a.pause();
+                a.currentTime = 0;
+            });
+        });
+
+        // General Audio Playback Handler Function
+        function setupAudioPlayers(container) {
+            container.querySelectorAll('.card').forEach(card => {
+                const playBtn = card.querySelector('.action-btn.play');
+                const audio = card.querySelector('audio');
+
+                if (playBtn && audio) {
+                    playBtn.addEventListener('click', () => {
+                        document.querySelectorAll('audio').forEach(a => {
+                            if (a !== audio) {
+                                a.pause();
+                                a.currentTime = 0;
+                                const otherBtn = a.closest('.card').querySelector('.action-btn.play');
+                                if (otherBtn) otherBtn.textContent = 'Play';
+                            }
+                        });
+
+                        if (audio.paused) {
+                            audio.play().then(() => {
+                                playBtn.textContent = 'Pause';
+                            }).catch(e => {
+                                console.log("Audio playback error:", e);
+                                alert("Please ensure the audio file exists and is accessible.");
+                            });
+                        } else {
+                            audio.pause();
+                            playBtn.textContent = 'Play';
+                        }
+                    });
+
+                    audio.addEventListener('ended', () => {
+                        playBtn.textContent = 'Play';
+                    });
+                }
+            });
+        }
+
+        // Initialize audio players for default trending songs on home page
+        setupAudioPlayers(document.body);
+
+        // Search Engine Functionality
+        const searchInput = document.getElementById('searchInput');
+        const cards = document.querySelectorAll('#cardsGrid .card');
+        const noResults = document.getElementById('noResults');
+
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            let matchCount = 0;
+
+            cards.forEach(card => {
+                const artist = card.getAttribute('data-artist').toLowerCase();
+                const track = card.getAttribute('data-track').toLowerCase();
+
+                if (artist.includes(query) || track.includes(query)) {
+                    card.style.display = 'flex';
+                    matchCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            if (matchCount === 0) {
+                noResults.style.display = 'block';
+            } else {
+                noResults.style.display = 'none';
+            }
+        });
+
+        // Automatic Theme Cycling via Floating Sun Button
+        const themeToggleMainBtn = document.getElementById('themeToggleMainBtn');
+        const themes = ['default', 'white', 'green', 'black'];
+
+        function applyTheme(theme) {
+            document.body.classList.remove('theme-white', 'theme-green', 'theme-black');
+            if (theme !== 'default') {
+                document.body.classList.add(`theme-${theme}`);
+            }
+            localStorage.setItem('zamlite_theme', theme);
+        }
+
+        themeToggleMainBtn.addEventListener('click', () => {
+            const currentTheme = localStorage.getItem('zamlite_theme') || 'default';
+            let currentIndex = themes.indexOf(currentTheme);
+            if (currentIndex === -1) currentIndex = 0;
+            
+            let nextIndex = (currentIndex + 1) % themes.length;
+            let nextTheme = themes[nextIndex];
+
+            applyTheme(nextTheme);
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('zamlite_theme');
+            if (savedTheme) {
+                applyTheme(savedTheme);
+            }
+        });
+    </script>
+</body>
+</html>
