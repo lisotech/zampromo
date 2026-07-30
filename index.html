@@ -1475,7 +1475,7 @@
         <button class="theme-toggle-main-btn" id="themeToggleMainBtn" title="Change Theme">☀️</button>
     </div>
 
-    <!-- Script handling Admin Auth, Persistent Local Storage Uploads, Deletion, and Rules -->
+    <!-- Script handling Admin Auth, Persistent Base64 Local Storage Uploads, Deletion, and Rules -->
     <script>
         // Sidebar Drawer Toggle
         const menuToggle = document.getElementById('menuToggle');
@@ -1721,7 +1721,7 @@
             updateAdminUI();
         }
 
-        // Upload/Save Song & Album Form Logic with 25MB Size Check & Local Storage Persistence
+        // Upload/Save Song & Album Form Logic with Base64 File Conversion & Persistent Storage
         const uploadSongForm = document.getElementById('uploadSongForm');
         const cardsGrid = document.getElementById('cardsGrid');
         const albumsGrid = document.getElementById('albumsGrid');
@@ -1749,65 +1749,86 @@
                 }
             }
 
-            // Using local Object URLs for browser execution. For cross-session retention of local files, Base64 conversion can be implemented if needed.
-            const artworkSrc = artworkFile ? URL.createObjectURL(artworkFile) : 'gart.png';
-            const audioSrc = mp3File ? URL.createObjectURL(mp3File) : 'Tix-Teza-Ft-Dream-Chaser-Do-Me-Bad.mp3';
-
-            const trackObj = {
-                title: title,
-                artist: artist,
-                type: type,
-                artwork: artworkSrc,
-                audio: audioSrc
+            // Helper function to read local files into Base64 strings for permanent retention
+            const readFileAsDataURL = (file) => {
+                return new Promise((resolve, reject) => {
+                    if (!file) {
+                        resolve(null);
+                        return;
+                    }
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = error => reject(error);
+                    reader.readAsDataURL(file);
+                });
             };
 
-            saveTrackToLocalStorage(trackObj);
+            Promise.all([
+                readFileAsDataURL(artworkFile),
+                readFileAsDataURL(mp3File)
+            ]).then(([artworkDataUrl, audioDataUrl]) => {
+                const artworkSrc = artworkDataUrl || 'gart.png';
+                const audioSrc = audioDataUrl || 'Tix-Teza-Ft-Dream-Chaser-Do-Me-Bad.mp3';
 
-            if (type === 'single') {
-                const newCard = document.createElement('div');
-                newCard.className = 'card';
-                newCard.setAttribute('data-artist', artist);
-                newCard.setAttribute('data-track', title);
-                newCard.innerHTML = `
-                    <div class="artwork-container">
-                        <img src="${artworkSrc}" alt="${artist} - ${title} Artwork">
-                    </div>
-                    <div class="card-info">
-                        <div class="artist-name">${artist}</div>
-                        <div class="track-title">${title}</div>
-                    </div>
-                    <audio src="${audioSrc}" preload="none"></audio>
-                    <div class="card-actions">
-                        <button class="action-btn play">Play</button>
-                        <a href="${audioSrc}" download="${title}.mp3" class="action-btn download">Down</a>
-                    </div>
-                `;
-                cardsGrid.insertBefore(newCard, cardsGrid.firstChild);
-                setupAudioPlayers(newCard);
-            } else {
-                const newAlbum = document.createElement('div');
-                newAlbum.className = 'card album-card';
-                newAlbum.setAttribute('data-artist', artist);
-                newAlbum.innerHTML = `
-                    <div class="artwork-container">
-                        <img src="${artworkSrc}" alt="${artist} Album Artwork">
-                    </div>
-                    <div class="card-info" style="text-align: center;">
-                        <div class="artist-name">${artist}</div>
-                    </div>
-                `;
-                albumsGrid.insertBefore(newAlbum, albumsGrid.firstChild);
-                
-                newAlbum.addEventListener('click', () => {
-                    openAlbumDetail(artist, artworkSrc);
-                });
-            }
+                const trackObj = {
+                    title: title,
+                    artist: artist,
+                    type: type,
+                    artwork: artworkSrc,
+                    audio: audioSrc
+                };
 
-            uploadSongForm.reset();
-            albumSongsCountGroup.style.display = 'none';
-            adminDashboardModal.style.display = 'none';
-            updateAdminUI();
-            alert('Song/Album successfully processed, published, and saved permanently!');
+                saveTrackToLocalStorage(trackObj);
+
+                if (type === 'single') {
+                    const newCard = document.createElement('div');
+                    newCard.className = 'card';
+                    newCard.setAttribute('data-artist', artist);
+                    newCard.setAttribute('data-track', title);
+                    newCard.innerHTML = `
+                        <div class="artwork-container">
+                            <img src="${artworkSrc}" alt="${artist} - ${title} Artwork">
+                        </div>
+                        <div class="card-info">
+                            <div class="artist-name">${artist}</div>
+                            <div class="track-title">${title}</div>
+                        </div>
+                        <audio src="${audioSrc}" preload="none"></audio>
+                        <div class="card-actions">
+                            <button class="action-btn play">Play</button>
+                            <a href="${audioSrc}" download="${title}.mp3" class="action-btn download">Down</a>
+                        </div>
+                    `;
+                    cardsGrid.insertBefore(newCard, cardsGrid.firstChild);
+                    setupAudioPlayers(newCard);
+                } else {
+                    const newAlbum = document.createElement('div');
+                    newAlbum.className = 'card album-card';
+                    newAlbum.setAttribute('data-artist', artist);
+                    newAlbum.innerHTML = `
+                        <div class="artwork-container">
+                            <img src="${artworkSrc}" alt="${artist} Album Artwork">
+                        </div>
+                        <div class="card-info" style="text-align: center;">
+                            <div class="artist-name">${artist}</div>
+                        </div>
+                    `;
+                    albumsGrid.insertBefore(newAlbum, albumsGrid.firstChild);
+                    
+                    newAlbum.addEventListener('click', () => {
+                        openAlbumDetail(artist, artworkSrc);
+                    });
+                }
+
+                uploadSongForm.reset();
+                albumSongsCountGroup.style.display = 'none';
+                adminDashboardModal.style.display = 'none';
+                updateAdminUI();
+                alert('Song/Album successfully processed, published, and saved permanently!');
+            }).catch(err => {
+                console.error("File processing error:", err);
+                alert("Error processing uploaded files.");
+            });
         });
 
         function openEditModal(card) {
