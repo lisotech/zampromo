@@ -565,21 +565,23 @@
             border-radius: 12px;
             max-width: 520px;
             width: 100%;
-            padding: 24px;
+            padding: 20px;
             position: relative;
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            max-height: 90vh;
-            overflow-y: auto;
+            max-height: 45vh; /* Reduced maximum height */
+            display: flex;
+            flex-direction: column;
         }
 
         .promo-popup-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 8px;
             position: relative;
+            flex-shrink: 0;
         }
 
         .promo-popup-title {
@@ -631,6 +633,8 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
+            overflow-y: auto; /* Enables manual scrolling inside the body */
+            padding-right: 4px;
         }
 
         .promo-timer-text {
